@@ -1,0 +1,188 @@
+# YouRip Core Spine — Claim Coverage Registry
+#
+# Story: T1-S1-F-03
+# Patent conformance: one entry per independent or dependent patent claim.
+# Each entry maps a claim to the test(s) that exercise it.
+#
+# Format: YAML (simple subset — keys are strings, values are strings or lists).
+# Parsed by src/claim-coverage/registry.ts (hand-rolled minimal YAML reader).
+#
+# Status values:
+#   implemented  — at least one test_claim_N_* test exists AND is expected to pass
+#   placeholder  — claim not yet implemented; report renders red until the story lands
+#   legacy       — test exists under old naming (transitional); will be renamed in T1-S1-F-04
+#
+# Adding or removing a claim entry requires a PR with PCO sign-off per T1-S1-G-02.
+
+claims:
+  - id: "1"
+    title: "Core Spine integrated service surface"
+    status: implemented
+    test_files:
+      - tests/unit/canonical-json.test.ts
+      - tests/unit/rubric-service.test.ts
+      - tests/unit/rating-service.test.ts
+      - tests/unit/challenge-service.test.ts
+
+  - id: "2"
+    title: "Submission registry with cryptographic hashes"
+    status: placeholder
+    test_files: []
+    blocked_by: "Submission Registry, Sprint 2"
+
+  - id: "3"
+    title: "Effective vote mass formula (sum_w^2 / sum_w2)"
+    status: implemented
+    test_files:
+      - tests/unit/scoring/decimal4.test.ts
+      - tests/unit/scoring/effective-vote-mass.test.ts
+      - tests/unit/scoring/score-aggregator-service.test.ts
+      - tests/unit/scoring/aggregator-wiring.test.ts
+
+  - id: "4"
+    title: "Bounded modifiers on score aggregate"
+    status: placeholder
+    test_files: []
+    blocked_by: WS-1B
+
+  - id: "5"
+    title: "Curated highlight reel composition"
+    status: placeholder
+    test_files: []
+
+  - id: "6"
+    title: "Diversity-window tie-break by score"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_6_diversity_window_tie_break_by_score
+    rename_story: T1-S1-F-04
+
+  - id: "7"
+    title: "Unverified monetization cannot release payout"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_7_unverified_cannot_pay
+    rename_story: T1-S1-F-04
+
+  - id: "8"
+    title: "Slot-bound monetization event record"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_8_slot_bound_monetization_event
+    rename_story: T1-S1-F-04
+
+  - id: "9"
+    title: "Idempotent payout endpoint"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_9_idempotent_payout
+    rename_story: T1-S1-F-04
+
+  - id: "10"
+    title: "Role-aware contributor splits"
+    status: implemented
+    test_files:
+      - tests/unit/submission/contributor-role.test.ts
+      - tests/unit/submission/submission-routes.test.ts
+
+  - id: "11"
+    title: "Migration record with checksum"
+    status: implemented
+    test_files:
+      - tests/unit/migration/migration-record.test.ts
+      - tests/unit/migration/migration-service.test.ts
+
+  - id: "12"
+    title: "Versioned payout ruleset"
+    status: placeholder
+    test_files: []
+
+  - id: "13"
+    title: "Signed rating events"
+    status: placeholder
+    test_files: []
+
+  - id: "13A"
+    title: "Canonical hashing discipline on signed rating events"
+    status: implemented
+    test_files:
+      - tests/unit/canonical-json.test.ts
+
+  - id: "13B"
+    title: "Schema-drift rejection on signed rating events"
+    status: implemented
+    test_files:
+      - tests/unit/rating-service.test.ts
+
+  - id: "14"
+    title: "Canonical hashing, integer-only payloads, rubric lock"
+    status: implemented
+    test_files:
+      - tests/unit/canonical-json.test.ts
+      - tests/unit/rubric-service.test.ts
+      - tests/unit/scoring/decimal4.test.ts
+      - tests/unit/scoring/stability-score.test.ts
+      - tests/unit/scoring/winner-gate.test.ts
+
+  - id: "15"
+    title: "Append-only event store integrity"
+    status: placeholder
+    test_files: []
+
+  - id: "16"
+    title: "Declared selection policy for reel"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_16_declared_selection_policy
+    rename_story: T1-S1-F-04
+
+  - id: "17"
+    title: "Confidence lower bound gate"
+    status: implemented
+    test_files:
+      - tests/unit/scoring/winner-gate.test.ts
+
+  - id: "18"
+    title: "Submitted clips only in reel"
+    status: legacy
+    test_files: []
+    rename_target: test_claim_18_reel_submitted_clips_only
+    rename_story: T1-S1-F-04
+
+  - id: "19"
+    title: "Rater weights do not persist across challenges"
+    status: implemented
+    test_files:
+      - tests/unit/scoring/signal-ingestion.test.ts
+      - tests/unit/scoring/aggregator-wiring.test.ts
+
+  - id: "20"
+    title: "Reason code catalog stability"
+    status: placeholder
+    test_files: []
+
+  - id: "20A"
+    title: "Reason code emission on gate failure"
+    status: implemented
+    test_files:
+      - tests/unit/scoring/winner-gate.test.ts
+
+  - id: "21"
+    title: "Append-only event hash chain / audit bundle inputs"
+    status: implemented
+    test_files:
+      - tests/unit/canonical-json.test.ts
+      - tests/unit/rubric-service.test.ts
+      - tests/unit/scoring/score-aggregator-service.test.ts
+      - tests/unit/scoring/aggregator-wiring.test.ts
+
+  - id: "22"
+    title: "Payout-verification method with cents reconciliation"
+    status: placeholder
+    test_files: []
+
+  - id: "23"
+    title: "Migration replay branch at recomputation time"
+    status: implemented
+    test_files:
+      - tests/unit/migration/migration-service.test.ts

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+coverage-report/
+.vitest-results.json
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode/
+.idea/

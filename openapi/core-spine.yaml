@@ -1,0 +1,280 @@
+openapi: 3.1.0
+info:
+  title: YouRip Core Spine API
+  version: 0.1.0
+  description: |
+    Core Spine API for YouRip. This spec covers endpoints shipped in Sprint 1
+    (WS-1A rubrics, WS-1D migrations). Additional endpoints (score aggregates,
+    submissions, rating events, payout events, audit bundles) land in later
+    sprints per API Contract §3.
+
+    All endpoints serve `application/json` and follow canonical JSON rules
+    (sorted keys, null omission, integer-safe numbers) as described in
+    `src/canonical/canonical-json.ts`. BIGINT-valued fields are serialized as
+    decimal strings on the wire.
+
+servers:
+  - url: http://localhost:3000
+    description: Local dev
+  - url: /
+    description: Production (path-based)
+
+paths:
+  /healthz:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                required: [ok]
+
+  /v1/rubrics:
+    post:
+      summary: Create a rubric
+      description: |
+        Story T1-S1-A-03. Creates a new rubric (draft by default, published
+        atomically if `publish: true`). Weight sum of criteria must equal 10000.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateRubricRequest" }
+      responses:
+        "201":
+          description: Rubric created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Rubric" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /v1/rubrics/{rubric_version}:
+    get:
+      summary: Get a rubric by version
+      parameters:
+        - in: path
+          name: rubric_version
+          required: true
+          schema: { type: string, pattern: "^rubric_[0-9]+\\.[0-9]+(\\.[0-9]+)?$" }
+      responses:
+        "200":
+          description: Rubric found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Rubric" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/challenges/{challengeId}/migrations:
+    post:
+      summary: Record a challenge-ruleset migration
+      description: |
+        Story T1-S1-D-03. Creates an immutable migration record capturing a
+        post-open ruleset change for the challenge. Server computes
+        `migration_checksum` over the seven Claim-11 fields; any
+        `migration_checksum` supplied by the client is rejected with
+        `MIGRATION_CLIENT_CHECKSUM_REJECTED`.
+      parameters:
+        - in: path
+          name: challengeId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateMigrationRequest" }
+      responses:
+        "201":
+          description: Migration created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Migration" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+components:
+  schemas:
+    ContributorRole:
+      type: string
+      description: |
+        Role of a submission contributor. Canonical values are defined here.
+
+        **Deprecated aliases (input only):**
+          - `FILMER` → normalized to `VIDEOGRAPHER` on persist. Requests using
+            `FILMER` receive a `Deprecation: true` response header. The alias
+            will be removed after one release cycle; see
+            `docs/vocabulary-deprecations.md`.
+
+        Response bodies always return canonical values. Clients should not
+        write code that expects `FILMER` in responses.
+      enum:
+        - VIDEOGRAPHER
+        - EDITOR
+        - PERFORMER
+        - RIGHTSHOLDER
+
+    CreateRubricRequest:
+      type: object
+      additionalProperties: false
+      required: [rubric_version, name, criteria, publish]
+      properties:
+        rubric_version: { type: string, pattern: "^rubric_[0-9]+\\.[0-9]+(\\.[0-9]+)?$" }
+        name:           { type: string, minLength: 1, maxLength: 200 }
+        description:    { type: string, maxLength: 2000 }
+        publish:        { type: boolean, default: false }
+        criteria:
+          type: array
+          minItems: 1
+          maxItems: 64
+          items: { $ref: "#/components/schemas/RubricCriterionInput" }
+
+    RubricCriterionInput:
+      type: object
+      additionalProperties: false
+      required: [criterion_key, display_name, weight_bp]
+      properties:
+        criterion_key: { type: string, pattern: "^[a-z][a-z0-9_]{1,63}$" }
+        display_name:  { type: string, minLength: 1, maxLength: 200 }
+        weight_bp:     { type: integer, minimum: 0, maximum: 10000 }
+        scale_min_bp:  { type: integer, minimum: 0, maximum: 10000, default: 0 }
+        scale_max_bp:  { type: integer, minimum: 1, maximum: 10000, default: 10000 }
+        sort_order:    { type: integer, minimum: 0, maximum: 1000 }
+
+    Rubric:
+      type: object
+      required:
+        - rubric_id
+        - rubric_version
+        - name
+        - created_at_utc_ms
+        - criteria
+      properties:
+        rubric_id:             { type: string, format: uuid }
+        rubric_version:        { type: string }
+        name:                  { type: string }
+        description:           { type: string }
+        created_at_utc_ms:     { $ref: "#/components/schemas/Int64String" }
+        published_at_utc_ms:   { $ref: "#/components/schemas/Int64String" }
+        canonical_json_sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        criteria:
+          type: array
+          items: { $ref: "#/components/schemas/RubricCriterion" }
+
+    RubricCriterion:
+      type: object
+      required: [criterion_key, display_name, weight_bp, scale_min_bp, scale_max_bp, sort_order]
+      properties:
+        criterion_key: { type: string }
+        display_name:  { type: string }
+        weight_bp:     { type: integer, minimum: 0, maximum: 10000 }
+        scale_min_bp:  { type: integer, minimum: 0, maximum: 10000 }
+        scale_max_bp:  { type: integer, minimum: 1, maximum: 10000 }
+        sort_order:    { type: integer, minimum: 0 }
+
+    CreateMigrationRequest:
+      type: object
+      description: |
+        The seven Claim-11 fields (minus challenge_id which is in the URL path
+        and migration_checksum which the server computes). All fields required.
+        Additional properties, including migration_checksum, are rejected.
+      additionalProperties: false
+      required:
+        - prior_ruleset_version
+        - new_ruleset_version
+        - migration_reason
+        - approver_id
+        - effective_at_utc_ms
+        - affected_event_ids
+      properties:
+        prior_ruleset_version: { type: string, minLength: 1, maxLength: 200 }
+        new_ruleset_version:   { type: string, minLength: 1, maxLength: 200 }
+        migration_reason:      { type: string, minLength: 1, maxLength: 2000 }
+        approver_id:           { type: string, format: uuid }
+        effective_at_utc_ms:
+          oneOf:
+            - { type: integer, minimum: 0 }
+            - { type: string, pattern: "^[0-9]+$" }
+          description: Integer milliseconds UTC. Accepted as integer or decimal string.
+        affected_event_ids:
+          type: array
+          minItems: 0
+          maxItems: 100000
+          items: { type: string, minLength: 1, maxLength: 200 }
+
+    Migration:
+      type: object
+      description: |
+        A stored Claim-11 migration record. Append-only; mutations are detected
+        by `migration_checksum` which the server recomputes on read and
+        compares against the stored value.
+      required:
+        - migration_id
+        - challenge_id
+        - prior_ruleset_version
+        - new_ruleset_version
+        - migration_reason
+        - approver_id
+        - effective_at_utc_ms
+        - affected_event_ids
+        - migration_checksum
+        - created_at_utc_ms
+      properties:
+        migration_id:           { type: string, format: uuid }
+        challenge_id:           { type: string, format: uuid }
+        prior_ruleset_version:  { type: string }
+        new_ruleset_version:    { type: string }
+        migration_reason:       { type: string }
+        approver_id:            { type: string, format: uuid }
+        effective_at_utc_ms:    { $ref: "#/components/schemas/Int64String" }
+        affected_event_ids:
+          type: array
+          items: { type: string }
+        migration_checksum:     { type: string, pattern: "^[0-9a-f]{64}$" }
+        created_at_utc_ms:      { $ref: "#/components/schemas/Int64String" }
+
+    Int64String:
+      type: string
+      pattern: "^[0-9]+$"
+      description: |
+        64-bit integer serialized as a decimal string. BIGINT values (ms
+        timestamps, cents amounts, basis points) are serialized this way to
+        avoid IEEE-754 precision loss past 2^53. Clients should parse as
+        BigInt / long.
+
+    ErrorResponse:
+      type: object
+      required: [reason_code, message]
+      properties:
+        reason_code:
+          type: string
+          description: Stable enumerated code from the PRD §6.6 catalog.
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+
+  responses:
+    BadRequest:
+      description: Request failed validation or a domain rule.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Conflict:
+      description: Resource conflict (duplicate, FK violation, etc.).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }

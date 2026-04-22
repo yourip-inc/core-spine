@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: core_spine
+    ports:
+      - "5432:5432"
+    volumes:
+      - core_spine_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d core_spine"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/core_spine
+    command: ["npx", "tsx", "src/db/migrate.ts"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  server:
+    build: .
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/core_spine
+      PORT: "3000"
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  core_spine_pg:

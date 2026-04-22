@@ -1,0 +1,52 @@
+# CODEOWNERS — YouRip Core Spine
+#
+# Story: T1-S1-G-02.
+# Enforces that the Patent Conformance Officer (PCO) is a required reviewer
+# on any PR touching patent-adjacent packages. Branch protection on `main`
+# must enforce the CODEOWNERS rule; without that, this file is advisory only.
+#
+# Owner handle conventions:
+#   @yourip/pco          — Patent Conformance Officer team
+#   @yourip/engineering  — General engineering team (fallback)
+#
+# Order matters: later rules override earlier ones for the same path.
+
+# Default owner for the whole repo.
+*                                          @yourip/engineering
+
+# Patent-adjacent source packages. PCO required.
+/src/canonical/                            @yourip/pco @yourip/engineering
+/src/rubric/                               @yourip/pco @yourip/engineering
+/src/rating/                               @yourip/pco @yourip/engineering
+/src/challenge/                            @yourip/pco @yourip/engineering
+/src/scoring/                              @yourip/pco @yourip/engineering
+/src/migration/                            @yourip/pco @yourip/engineering
+/src/submission/                           @yourip/pco @yourip/engineering
+/src/errors/reason-codes.ts                @yourip/pco @yourip/engineering
+
+# Migrations - any schema change on patent-adjacent tables is patent-adjacent.
+/migrations/                               @yourip/pco @yourip/engineering
+
+# Patent-adjacent tests.
+/tests/unit/rubric-service.test.ts         @yourip/pco @yourip/engineering
+/tests/unit/rating-service.test.ts         @yourip/pco @yourip/engineering
+/tests/unit/challenge-service.test.ts      @yourip/pco @yourip/engineering
+/tests/unit/canonical-json.test.ts         @yourip/pco @yourip/engineering
+/tests/unit/scoring/                       @yourip/pco @yourip/engineering
+/tests/unit/migration/                     @yourip/pco @yourip/engineering
+/tests/unit/submission/                    @yourip/pco @yourip/engineering
+
+# Registry + coverage machinery - PCO exclusive.
+/tests/claim_registry.yaml                 @yourip/pco
+/src/claim-coverage/                       @yourip/pco @yourip/engineering
+
+# Patent-conformance documents - PCO exclusive.
+/docs/patent/                              @yourip/pco
+/docs/scoring-model-requirements.md        @yourip/pco @yourip/engineering
+/docs/vocabulary-deprecations.md           @yourip/pco @yourip/engineering
+
+# OpenAPI - schema changes carry API-contract weight.
+/openapi/                                  @yourip/pco @yourip/engineering
+
+# ESLint rules that enforce patent-conformance conventions.
+/eslint-rules/                             @yourip/pco @yourip/engineering
