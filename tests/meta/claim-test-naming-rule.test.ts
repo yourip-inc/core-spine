@@ -13,7 +13,7 @@
 
 import { describe, it, expect } from "vitest";
 import { RuleTester } from "eslint";
-import rule from "../../eslint-rules/claim-test-naming.cjs";
+import rule from "../../eslint-rules/claim-test-naming.js";
 
 // RuleTester from eslint 8 — works with both CJS and the legacy config shape.
 const ruleTester = new RuleTester({

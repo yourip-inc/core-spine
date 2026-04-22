@@ -138,7 +138,42 @@ describe("canonical-json", () => {
 
   describe("test_claim_21_rejects_unserializable_types", () => {
     it("rejects Date (use createdAtUtcMs BigInt instead)", () => {
-      expect(() => canonicalString({ d: new Date() as never })).toThrow();
+      expect(() => canonicalString({ d: new Date() as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("rejects RegExp", () => {
+      expect(() => canonicalString({ x: /foo/ as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("rejects Map", () => {
+      expect(() => canonicalString({ x: new Map() as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("rejects Set", () => {
+      expect(() => canonicalString({ x: new Set() as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("rejects Symbol", () => {
+      expect(() => canonicalString({ x: Symbol("test") as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("rejects function", () => {
+      expect(() => canonicalString({ x: (() => {}) as never })).toThrow(CanonicalJsonError);
+    });
+
+    it("accepts Object.create(null) (null-prototype is intentional)", () => {
+      // The prototype-chain guard explicitly allows proto===null so
+      // null-prototype objects behave identically to plain object literals.
+      // This guards against a future refactor tightening the check to
+      // proto===Object.prototype only, which would silently break callers
+      // using Object.create(null) as a safe-default bag.
+      const empty = Object.create(null);
+      expect(canonicalString(empty)).toBe("{}");
+
+      const populated = Object.create(null);
+      populated.a = 1;
+      populated.b = 2;
+      expect(canonicalString(populated)).toBe('{"a":1,"b":2}');
     });
 
     it("rejects root null / undefined", () => {

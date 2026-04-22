@@ -107,6 +107,17 @@ function write(value: CanonicalValue, path: string): string {
   }
 
   if (typeof value === "object") {
+    // Only plain objects (Object.prototype or null prototype) are serializable.
+    // Rejects Date, RegExp, Map, Set, Buffer, URL, TypedArrays, class
+    // instances, etc. — all of which would survive Object.keys()===[] and
+    // silently emit "{}" instead of throwing.
+    const proto = Object.getPrototypeOf(value);
+    if (proto !== null && proto !== Object.prototype) {
+      throw new CanonicalJsonError(
+        path,
+        `only plain objects are serializable; got ${value.constructor?.name ?? "non-plain object"}`,
+      );
+    }
     return writeObject(value as { [key: string]: CanonicalValue }, path);
   }
 

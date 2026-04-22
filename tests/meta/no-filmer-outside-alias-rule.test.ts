@@ -13,7 +13,7 @@
 
 import { describe, it, expect } from "vitest";
 import { RuleTester } from "eslint";
-import rule from "../../eslint-rules/no-filmer-outside-alias.cjs";
+import rule from "../../eslint-rules/no-filmer-outside-alias.js";
 
 const ruleTester = new RuleTester({
   parserOptions: { ecmaVersion: 2022, sourceType: "module" },

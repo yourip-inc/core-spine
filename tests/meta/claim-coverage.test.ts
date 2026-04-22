@@ -36,11 +36,11 @@ describe("claim registry parser", () => {
     expect(ids).toContain("20A");
   });
 
-  it("has seven legacy entries matching F-04 (claims 6, 7, 8, 9, 16, 18, 21)", async () => {
+  it("has six legacy entries matching F-04 (claims 6, 7, 8, 9, 16, 18)", async () => {
     const src = await readFile(REGISTRY_PATH, "utf8");
     const reg = parseClaimRegistry(src);
     const legacy = reg.claims.filter((c) => c.status === "legacy").map((c) => c.id).sort();
-    expect(legacy).toEqual(["16", "18", "21", "6", "7", "8", "9"].sort());
+    expect(legacy).toEqual(["16", "18", "6", "7", "8", "9"].sort());
   });
 
   it("every legacy claim declares a rename_target and rename_story", async () => {

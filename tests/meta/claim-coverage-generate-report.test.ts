@@ -216,6 +216,14 @@ claims:
   it("test_claim_coverage_report_keeps_yellow_legacy_when_some_paths_ok", async () => {
     // Mixed case modeled on Claim 21 in the real registry — one real path,
     // one phantom path. Legacy branch keeps yellow with diagnostics.
+    //
+    // Subtle: the real file's content must contain `test_claim_21_*` in a
+    // form that `verify-test-files.ts` (loose \b-bounded token regex) will
+    // find, but that `discover.ts` (strict it/test/describe() call regex)
+    // will NOT. Otherwise discovery promotes the claim to the green branch
+    // before the legacy fallback ever runs, and this test fails with
+    // 'green' instead of 'yellow_legacy'. A bare comment is the simplest
+    // construction that satisfies both requirements.
     await writeRegistry(`
 claims:
   - id: "21"
@@ -229,7 +237,7 @@ claims:
     await mkdir(join(projectRoot, "tests", "unit"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "unit", "canonical-json.test.ts"),
-      `it("test_claim_21_bundle_hash_verifies", () => {});\n`,
+      `// test_claim_21_bundle_hash_verifies — covered by a real test once the audit bundle module lands\n`,
       "utf8",
     );
 

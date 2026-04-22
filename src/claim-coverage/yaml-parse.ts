@@ -35,7 +35,7 @@ export function parseClaimRegistry(source: string): ClaimRegistry {
       continue;
     }
     // Entry must start with "  - id:"
-    if (!/^  - id:\s*/.test(line)) {
+    if (!/^ {2}- id:\s*/.test(line)) {
       throw new Error(`registry: expected '  - id:' at line ${i + 1}, got: ${line}`);
     }
     const { entry, nextIndex } = parseEntry(lines, i);
@@ -55,7 +55,7 @@ export function parseClaimRegistry(source: string): ClaimRegistry {
 
 function parseEntry(lines: string[], start: number): { entry: ClaimEntry; nextIndex: number } {
   // First line: `  - id: "N"` or `  - id: N`
-  const idMatch = lines[start]!.match(/^  - id:\s*(.+?)\s*$/);
+  const idMatch = lines[start]!.match(/^ {2}- id:\s*(.+?)\s*$/);
   if (!idMatch) throw new Error(`registry: malformed id line: ${lines[start]}`);
   const id = unquote(idMatch[1]!);
 
@@ -69,9 +69,9 @@ function parseEntry(lines: string[], start: number): { entry: ClaimEntry; nextIn
       continue;
     }
     // Next entry starts with "  - id:" — stop
-    if (/^  - id:\s*/.test(line)) break;
+    if (/^ {2}- id:\s*/.test(line)) break;
     // Continuation fields for this entry start with 4 spaces + key
-    const kvMatch = line.match(/^    ([a-z_]+):\s*(.*)$/);
+    const kvMatch = line.match(/^ {4}([a-z_]+):\s*(.*)$/);
     if (!kvMatch) {
       throw new Error(`registry: unexpected indentation at line ${i + 1}: ${line}`);
     }
@@ -85,7 +85,7 @@ function parseEntry(lines: string[], start: number): { entry: ClaimEntry; nextIn
       while (i < lines.length) {
         const L = lines[i]!;
         if (L.trim() === "") { i++; continue; }
-        const m = L.match(/^      - (.+)$/);
+        const m = L.match(/^ {6}- (.+)$/);
         if (!m) break;
         items.push(unquote(m[1]!.trim()));
         i++;

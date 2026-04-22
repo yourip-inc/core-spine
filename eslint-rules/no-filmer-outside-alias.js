@@ -16,7 +16,7 @@
 
 const ALIAS_LAYER_RE = /[/\\]submission[/\\]contributor-role\.ts$/i;
 const TEST_FILE_RE = /\.test\.(ts|tsx|js|jsx)$/i;
-const DOCS_PATH_RE = /[/\\]docs[/\\]/i;
+const DOCS_PATH_RE = /(^|[/\\])docs[/\\]/i;
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
