@@ -6,47 +6,47 @@
 # must enforce the CODEOWNERS rule; without that, this file is advisory only.
 #
 # Owner handle conventions:
-#   @yourip/pco          — Patent Conformance Officer team
-#   @yourip/engineering  — General engineering team (fallback)
+#   @youripapp/pco          — Patent Conformance Officer team
+#   @youripapp/engineering  — General engineering team (fallback)
 #
 # Order matters: later rules override earlier ones for the same path.
 
 # Default owner for the whole repo.
-*                                          @yourip/engineering
+*                                          @youripapp/engineering
 
 # Patent-adjacent source packages. PCO required.
-/src/canonical/                            @yourip/pco @yourip/engineering
-/src/rubric/                               @yourip/pco @yourip/engineering
-/src/rating/                               @yourip/pco @yourip/engineering
-/src/challenge/                            @yourip/pco @yourip/engineering
-/src/scoring/                              @yourip/pco @yourip/engineering
-/src/migration/                            @yourip/pco @yourip/engineering
-/src/submission/                           @yourip/pco @yourip/engineering
-/src/errors/reason-codes.ts                @yourip/pco @yourip/engineering
+/src/canonical/                            @youripapp/pco @youripapp/engineering
+/src/rubric/                               @youripapp/pco @youripapp/engineering
+/src/rating/                               @youripapp/pco @youripapp/engineering
+/src/challenge/                            @youripapp/pco @youripapp/engineering
+/src/scoring/                              @youripapp/pco @youripapp/engineering
+/src/migration/                            @youripapp/pco @youripapp/engineering
+/src/submission/                           @youripapp/pco @youripapp/engineering
+/src/errors/reason-codes.ts                @youripapp/pco @youripapp/engineering
 
 # Migrations - any schema change on patent-adjacent tables is patent-adjacent.
-/migrations/                               @yourip/pco @yourip/engineering
+/migrations/                               @youripapp/pco @youripapp/engineering
 
 # Patent-adjacent tests.
-/tests/unit/rubric-service.test.ts         @yourip/pco @yourip/engineering
-/tests/unit/rating-service.test.ts         @yourip/pco @yourip/engineering
-/tests/unit/challenge-service.test.ts      @yourip/pco @yourip/engineering
-/tests/unit/canonical-json.test.ts         @yourip/pco @yourip/engineering
-/tests/unit/scoring/                       @yourip/pco @yourip/engineering
-/tests/unit/migration/                     @yourip/pco @yourip/engineering
-/tests/unit/submission/                    @yourip/pco @yourip/engineering
+/tests/unit/rubric-service.test.ts         @youripapp/pco @youripapp/engineering
+/tests/unit/rating-service.test.ts         @youripapp/pco @youripapp/engineering
+/tests/unit/challenge-service.test.ts      @youripapp/pco @youripapp/engineering
+/tests/unit/canonical-json.test.ts         @youripapp/pco @youripapp/engineering
+/tests/unit/scoring/                       @youripapp/pco @youripapp/engineering
+/tests/unit/migration/                     @youripapp/pco @youripapp/engineering
+/tests/unit/submission/                    @youripapp/pco @youripapp/engineering
 
 # Registry + coverage machinery - PCO exclusive.
-/tests/claim_registry.yaml                 @yourip/pco
-/src/claim-coverage/                       @yourip/pco @yourip/engineering
+/tests/claim_registry.yaml                 @youripapp/pco
+/src/claim-coverage/                       @youripapp/pco @youripapp/engineering
 
 # Patent-conformance documents - PCO exclusive.
-/docs/patent/                              @yourip/pco
-/docs/scoring-model-requirements.md        @yourip/pco @yourip/engineering
-/docs/vocabulary-deprecations.md           @yourip/pco @yourip/engineering
+/docs/patent/                              @youripapp/pco
+/docs/scoring-model-requirements.md        @youripapp/pco @youripapp/engineering
+/docs/vocabulary-deprecations.md           @youripapp/pco @youripapp/engineering
 
 # OpenAPI - schema changes carry API-contract weight.
-/openapi/                                  @yourip/pco @yourip/engineering
+/openapi/                                  @youripapp/pco @youripapp/engineering
 
 # ESLint rules that enforce patent-conformance conventions.
-/eslint-rules/                             @yourip/pco @yourip/engineering
+/eslint-rules/                             @youripapp/pco @youripapp/engineering
