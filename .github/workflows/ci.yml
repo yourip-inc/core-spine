@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.10"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint (including patent-adjacent test naming rule, F-01)
+        run: npm run lint
+
+      - name: Run tests with JSON output for claim-coverage
+        # --reporter=json writes raw JSON to stdout; redirect to file for the report.
+        run: npm test -- --reporter=json --outputFile=.vitest-results.json
+
+      - name: Generate claim-coverage report (F-02)
+        # Uses .vitest-results.json produced in the previous step. Exits non-zero
+        # if any claim is red_failing; placeholders (red_missing) are informational.
+        run: npm run claim-coverage:report
+        env:
+          # Reproducibility mode off in CI — timestamp header reflects wall clock.
+          CLAIM_COVERAGE_FROZEN_TS: ""
+
+      - name: Upload claim-coverage report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claim-coverage-report
+          path: coverage-report/
+          if-no-files-found: error
