@@ -1,22 +1,29 @@
 # YouRip Core Spine — Claim Coverage Registry
 #
-# Story: T1-S1-F-03
+# Story: T1-S1-F-03 (initial registry); T1-S1-F-05 (alignment-to-patent-text, this change)
 # Patent conformance: one entry per independent or dependent patent claim.
 # Each entry maps a claim to the test(s) that exercise it.
 #
 # Format: YAML (simple subset — keys are strings, values are strings or lists).
-# Parsed by src/claim-coverage/registry.ts (hand-rolled minimal YAML reader).
+# Parsed by src/claim-coverage/yaml-parse.ts (hand-rolled minimal YAML reader);
+# loaded by src/claim-coverage/generate-report.ts.
 #
 # Status values:
 #   implemented  — at least one test_claim_N_* test exists AND is expected to pass
 #   placeholder  — claim not yet implemented; report renders red until the story lands
 #   legacy       — test exists under old naming (transitional); will be renamed in T1-S1-F-04
 #
+# Title convention:
+#   Titles summarize the inventive substance of each claim using the claim's
+#   own operative vocabulary. Titles are not paraphrases of dependency chains —
+#   a dependent claim's title describes what the dependency adds, not what the
+#   parent claim already covers.
+#
 # Adding or removing a claim entry requires a PR with PCO sign-off per T1-S1-G-02.
 
 claims:
   - id: "1"
-    title: "Core Spine integrated service surface"
+    title: "Deterministic event-chain computation and cryptographic audit (independent method)"
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
@@ -25,10 +32,11 @@ claims:
       - tests/unit/challenge-service.test.ts
 
   - id: "2"
-    title: "Submission registry with cryptographic hashes"
-    status: placeholder
-    test_files: []
-    blocked_by: "Submission Registry, Sprint 2"
+    title: "Engagement-signal bounded event-scoped weights (watch completion, rating frequency, recency; clamped; non-persistent)"
+    status: implemented
+    test_files:
+      - tests/unit/scoring/bounded-weight.test.ts
+      - tests/unit/scoring/signal-ingestion.test.ts
 
   - id: "3"
     title: "Effective vote mass formula (sum_w^2 / sum_w2)"
@@ -40,15 +48,16 @@ claims:
       - tests/unit/scoring/aggregator-wiring.test.ts
 
   - id: "4"
-    title: "Bounded modifiers on score aggregate"
+    title: "Anti-brigading controls with COORDINATION_BURST_CAPPED downweight"
     status: placeholder
     test_files: []
-    blocked_by: WS-1B
+    blocked_by: WS-1B-extensions or Sprint 2 anti-brigading
 
   - id: "5"
-    title: "Curated highlight reel composition"
+    title: "Role-weighted aggregation (public + judge + sponsor-appointed) under common or mapped rubric version"
     status: placeholder
     test_files: []
+    blocked_by: Rating Service role-weighted aggregation, Sprint 2
 
   - id: "6"
     title: "Diversity-window tie-break by score"
@@ -79,43 +88,45 @@ claims:
     rename_story: T1-S1-F-04
 
   - id: "10"
-    title: "Role-aware contributor splits"
+    title: "Role-aware contributor splits as basis-point map summing to 10000 (athlete + videographer)"
     status: implemented
     test_files:
       - tests/unit/submission/contributor-role.test.ts
       - tests/unit/submission/submission-routes.test.ts
 
   - id: "11"
-    title: "Migration record with checksum"
+    title: "Mid-competition MigrationRecord with prior/new versions, reason, approver, effective timestamp, affected event list, and checksum"
     status: implemented
     test_files:
       - tests/unit/migration/migration-record.test.ts
       - tests/unit/migration/migration-service.test.ts
 
   - id: "12"
-    title: "Versioned payout ruleset"
+    title: "Per-criterion score separation before overall aggregate (per-criterion transparency)"
     status: placeholder
     test_files: []
+    blocked_by: Score Aggregator per-criterion breakout, Sprint 2
 
   - id: "13"
-    title: "Signed rating events"
+    title: "Internal event ledger append-only or hash-chained structure"
     status: placeholder
     test_files: []
+    blocked_by: Append-only event ledger, Sprint 2
 
   - id: "13A"
-    title: "Canonical hashing discipline on signed rating events"
+    title: "Canonical byte representation: sorted keys, null exclusion, integer-safe encoding, UTF-8, byte-identical output across runtime serialization orders"
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
 
   - id: "13B"
-    title: "Schema-drift rejection on signed rating events"
-    status: implemented
-    test_files:
-      - tests/unit/rating-service.test.ts
+    title: "Audit bundle reproduces payout outputs from stored event hashes + version IDs without access to original runtime state"
+    status: placeholder
+    test_files: []
+    blocked_by: Claim 22 payout-verification method, Sprint 3
 
   - id: "14"
-    title: "Canonical hashing, integer-only payloads, rubric lock"
+    title: "Platform system (independent apparatus claim): append-only event store with hash-chain integrity, end-to-end instruction sequence"
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
@@ -125,9 +136,10 @@ claims:
       - tests/unit/scoring/winner-gate.test.ts
 
   - id: "15"
-    title: "Append-only event store integrity"
+    title: "Schema-driven rendering of rating input surfaces from locked rubric schema (labels, weight indicators, scoring ranges)"
     status: placeholder
     test_files: []
+    blocked_by: Rating UI schema-driven rendering, Sprint 2
 
   - id: "16"
     title: "Declared selection policy for reel"
@@ -137,7 +149,7 @@ claims:
     rename_story: T1-S1-F-04
 
   - id: "17"
-    title: "Confidence lower bound gate"
+    title: "Confidence-lower-bound threshold gate on winner eligibility"
     status: implemented
     test_files:
       - tests/unit/scoring/winner-gate.test.ts
@@ -150,25 +162,26 @@ claims:
     rename_story: T1-S1-F-04
 
   - id: "19"
-    title: "Rater weights do not persist across challenges"
+    title: "Bounded event-scoped weights do not persist across challenges; derived from in-challenge engagement signals; clamped to configurable maximum"
     status: implemented
     test_files:
       - tests/unit/scoring/signal-ingestion.test.ts
       - tests/unit/scoring/aggregator-wiring.test.ts
 
   - id: "20"
-    title: "Reason code catalog stability"
+    title: "Stable reason-code catalog: enumerated list {RATING_SIG_INVALID, RATER_ROLE_NOT_ALLOWED, DUPLICATE_RATER_DOWNWEIGHT, COORDINATION_BURST_CAPPED, CONFIDENCE_LOWER_BOUND_FAIL, PROVENANCE_PARTIAL, RIGHTS_HOLD, AD_EVENT_PARTIAL, AD_EVENT_UNVERIFIED, ESCROW_PENDING, PAYOUT_RULESET_MISMATCH, IDEMPOTENCY_REPLAY}"
     status: placeholder
     test_files: []
+    blocked_by: "Catalog incomplete: 10 of 12 enumerated codes present in reason-codes.ts. Missing AD_EVENT_UNVERIFIED (Monetization Ledger, Sprint 2) and PROVENANCE_PARTIAL (Submission Registry, Sprint 2). Flip to 'implemented' once both land in src/errors/reason-codes.ts."
 
   - id: "20A"
-    title: "Reason code emission on gate failure"
+    title: "Reason codes as computational branch selectors (RIGHTS_HOLD→escrow, AD_EVENT_UNVERIFIED→exclude, RATING_SIG_INVALID→quarantine, COORDINATION_BURST_CAPPED→bounded downweight)"
     status: implemented
     test_files:
       - tests/unit/scoring/winner-gate.test.ts
 
   - id: "21"
-    title: "Append-only event hash chain / audit bundle inputs"
+    title: "Computer-readable medium (independent claim): full pipeline with canonical hashing + idempotent payout"
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
@@ -177,12 +190,13 @@ claims:
       - tests/unit/scoring/aggregator-wiring.test.ts
 
   - id: "22"
-    title: "Payout-verification method with cents reconciliation"
+    title: "Payout-verification method (independent): recomputation with cents-level reconciliation, upstream hash reference, reason codes for differences"
     status: placeholder
     test_files: []
+    blocked_by: Payout Engine + verification harness, Sprint 3
 
   - id: "23"
-    title: "Migration replay branch at recomputation time"
+    title: "Dual-version migration replay: pre-migration rules on pre-migration events; post-migration rules on post-migration events"
     status: implemented
     test_files:
       - tests/unit/migration/migration-service.test.ts

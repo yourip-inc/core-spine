@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-YouRip **T1 Core Spine** — a TypeScript + Fastify + Postgres server implementing the PRD-T1-CORE-SPINE and PRD-T1-API contracts. This is a *patent-adjacent* codebase: most of `src/` corresponds directly to specific patent claims (1, 3, 10, 11, 13A/B, 14, 19, 21, 23). Treat changes to those directories accordingly — see "Patent conformance" below.
+YouRip **T1 Core Spine** — a TypeScript + Fastify + Postgres server implementing the PRD-T1-CORE-SPINE and PRD-T1-API contracts. This is a *patent-adjacent* codebase: most of `src/` corresponds directly to specific patent claims (1, 3, 10, 11, 13A, 14, 19, 21, 23). Treat changes to those directories accordingly — see "Patent conformance" below.
 
 Sprint 1 (WS-1A through WS-1G) is complete; open work is tracked in `ACCEPTANCE.md` §"Open for next sprint follow-up". `docs/history/MERGE_MANIFEST.md` records how this tree was assembled from upstream zips — only useful if auditing history.
 
