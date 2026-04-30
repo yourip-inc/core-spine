@@ -52,6 +52,12 @@ export const REASON_CODES = {
   MIGRATION_CLIENT_CHECKSUM_REJECTED: "MIGRATION_CLIENT_CHECKSUM_REJECTED", // T1-S1-D-03
   MIGRATION_REASON_EMPTY:          "MIGRATION_REASON_EMPTY",          // T1-S1-D-03
   CHALLENGE_ID_UNRESOLVABLE:       "CHALLENGE_ID_UNRESOLVABLE",       // T1-S1-D-03
+
+  // --- T2 Sprint 1 — WS-2A additions (Grom Profiles, claim 14) ---
+  // Adding codes here requires a PR with PCO sign-off per T1-S1-G-02.
+  GUARDIAN_PAYLOAD_INVALID:        "GUARDIAN_PAYLOAD_INVALID",        // T2-S1-A-01
+  // GUARDIAN_DUPLICATE_CONTACT — PCO-pending; lands in follow-up
+  // commit on this branch after the next PCO sync. See PR #4 description.
 } as const;
 
 export type ReasonCode = typeof REASON_CODES[keyof typeof REASON_CODES];

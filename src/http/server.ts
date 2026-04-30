@@ -7,6 +7,9 @@ import pg from "pg";
 import { RubricService } from "../rubric/rubric-service.js";
 import { PgRubricRepository } from "../rubric/rubric-repository.js";
 import { registerRubricRoutes } from "./rubric-routes.js";
+import { GuardianService } from "../grom/guardian-service.js";
+import { PgGuardianRepository } from "../grom/guardian-repository.js";
+import { registerGuardianRoutes } from "./guardian-routes.js";
 import { registerSubmissionRoutes } from "./submission-routes.js";
 import {
   MigrationRecordService,
@@ -47,9 +50,13 @@ export function buildServer(opts: {
     auditSink,
   );
 
+  const guardianRepo = new PgGuardianRepository();
+  const guardianService = new GuardianService(opts.pool, guardianRepo, clock);
+
   registerRubricRoutes(app, rubricService);
   registerMigrationRoutes(app, migrationService);
   registerSubmissionRoutes(app);
+  registerGuardianRoutes(app, guardianService);
 
   app.get("/healthz", async () => ({ ok: true }));
 
