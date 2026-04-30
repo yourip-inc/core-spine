@@ -14,6 +14,30 @@
 --
 -- Story: T2-S1-A-01 (Code Review follow-up)
 -- Patent claim: 14
+--
+-- OPERATOR NOTE — Recovery from collision failure:
+--   This migration assumes no two existing rows have emails that
+--   differ only in case (e.g., 'Parent@example.com' vs
+--   'parent@example.com'). If such rows exist, the UPDATE below
+--   will lowercase them to byte-identical values, which violates
+--   the still-active case-sensitive unique index from migration
+--   010. The transaction will rollback atomically.
+--
+--   To recover, an operator must:
+--     1. Identify collision groups:
+--          SELECT contact_email, COUNT(*)
+--            FROM guardian_accounts
+--           GROUP BY LOWER(contact_email)
+--          HAVING COUNT(*) > 1;
+--     2. Resolve each collision (typically by deleting the row
+--        with the later created_at_utc_ms, preserving the earliest
+--        registration).
+--     3. Re-run this migration.
+--
+--   This scenario is unreachable in environments that apply 010
+--   and 011 together (this PR's chunked landing). It is reachable
+--   only in environments where 010 was applied earlier with mixed-
+--   case test data inserted before 011 landed.
 
 BEGIN;
 

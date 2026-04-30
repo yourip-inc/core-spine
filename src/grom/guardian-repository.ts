@@ -15,6 +15,17 @@ export interface GuardianRepository {
   }): Promise<{ guardianId: string }>;
 
   findById(client: PoolClient, guardianId: string): Promise<GuardianAccount | null>;
+
+  /**
+   * Case-insensitive lookup by contact email. Callers may pass any casing;
+   * implementations MUST match against the canonical lowercase form to
+   * remain consistent with the storage layer's case-insensitive unique
+   * index (migration 011, LOWER(contact_email)).
+   *
+   * Both implementations (PgGuardianRepository and any test stubs) must
+   * honor this contract or risk the casing-bifurcation hazard documented
+   * in PR #4's Code Review thread.
+   */
   findByEmail(client: PoolClient, contactEmail: string): Promise<GuardianAccount | null>;
 }
 
@@ -58,11 +69,17 @@ export class PgGuardianRepository implements GuardianRepository {
   }
 
   async findByEmail(client: PoolClient, contactEmail: string): Promise<GuardianAccount | null> {
+    // Case-insensitive lookup matching the storage layer's case-insensitive
+    // unique index (migration 011, LOWER(contact_email)). The LOWER($1) on
+    // the parameter side allows callers to pass mixed-case input; the
+    // LOWER(contact_email) on the column side ensures the planner uses
+    // the functional unique index rather than falling back to a sequential
+    // scan. Both sides matter — see PR #4 Code Review thread.
     const { rows } = await client.query<GuardianRow>(
       `SELECT guardian_id, contact_email, contact_phone_hash,
               guardian_verification_state, created_at_utc_ms, updated_at_utc_ms
          FROM guardian_accounts
-        WHERE contact_email = $1`,
+        WHERE LOWER(contact_email) = LOWER($1)`,
       [contactEmail],
     );
     if (rows.length === 0) return null;

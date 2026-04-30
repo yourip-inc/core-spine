@@ -48,8 +48,13 @@ class InMemoryRepo implements GuardianRepository {
   }
 
   async findByEmail(_c: unknown, contactEmail: string) {
+    // Mirror PgGuardianRepository's case-insensitive contract:
+    // canonical stored form is lowercase (per Zod transform + migration
+    // 011), and the SQL WHERE uses LOWER() on both sides. Tests that
+    // exercise mixed-case input rely on this stub matching the contract.
+    const lookup = contactEmail.toLowerCase();
     for (const g of this.guardians.values()) {
-      if (g.contactEmail === contactEmail) return g;
+      if (g.contactEmail.toLowerCase() === lookup) return g;
     }
     return null;
   }
@@ -135,6 +140,25 @@ describe("GuardianService", () => {
       expect(found).not.toBeNull();
       expect(found!.contactEmail).toBe("lookup@example.com");
       expect(found!.guardianVerificationState).toBe("UNVERIFIED");
+    });
+
+    it("test_claim_14_find_by_email_is_case_insensitive", async () => {
+      // Code Review finding (PR #4 round 2): findByEmail must match
+      // the storage layer's case-insensitive unique index. Callers
+      // (admin tools, the upcoming A-04 hard-gate, etc.) may pass
+      // mixed-case input; lookup must succeed regardless of casing.
+      await svc.create(validRequest({ contact_email: "lookup@example.com" }));
+      const variants = [
+        "lookup@example.com",
+        "Lookup@Example.com",
+        "LOOKUP@EXAMPLE.COM",
+        "lOoKuP@eXaMpLe.CoM",
+      ];
+      for (const variant of variants) {
+        const found = await repo.findByEmail(null as never, variant);
+        expect(found).not.toBeNull();
+        expect(found!.contactEmail).toBe("lookup@example.com");
+      }
     });
   });
 });
