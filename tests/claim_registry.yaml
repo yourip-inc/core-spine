@@ -61,31 +61,23 @@ claims:
 
   - id: "6"
     title: "Diversity-window tie-break by score"
-    status: legacy
+    status: placeholder
     test_files: []
-    rename_target: test_claim_6_diversity_window_tie_break_by_score
-    rename_story: T1-S1-F-04
 
   - id: "7"
     title: "Unverified monetization cannot release payout"
-    status: legacy
+    status: placeholder
     test_files: []
-    rename_target: test_claim_7_unverified_cannot_pay
-    rename_story: T1-S1-F-04
 
   - id: "8"
     title: "Slot-bound monetization event record"
-    status: legacy
+    status: placeholder
     test_files: []
-    rename_target: test_claim_8_slot_bound_monetization_event
-    rename_story: T1-S1-F-04
 
   - id: "9"
     title: "Idempotent payout endpoint"
-    status: legacy
+    status: placeholder
     test_files: []
-    rename_target: test_claim_9_idempotent_payout
-    rename_story: T1-S1-F-04
 
   - id: "10"
     title: "Role-aware contributor splits as basis-point map summing to 10000 (athlete + videographer)"
@@ -142,11 +134,9 @@ claims:
     blocked_by: Rating UI schema-driven rendering, Sprint 2
 
   - id: "16"
-    title: "Declared selection policy for reel"
-    status: legacy
+    title: "Pre-aggregation quarantine for unsigned or signer-invalid rating events with reason codes"
+    status: placeholder
     test_files: []
-    rename_target: test_claim_16_declared_selection_policy
-    rename_story: T1-S1-F-04
 
   - id: "17"
     title: "Confidence-lower-bound threshold gate on winner eligibility"
@@ -155,18 +145,15 @@ claims:
       - tests/unit/scoring/winner-gate.test.ts
 
   - id: "18"
-    title: "Submitted clips only in reel"
-    status: legacy
+    title: "Sponsor report counting slot-bound monetization events satisfying a stored reporting threshold; threshold recorded with the report output"
+    status: placeholder
     test_files: []
-    rename_target: test_claim_18_reel_submitted_clips_only
-    rename_story: T1-S1-F-04
 
   - id: "19"
     title: "Bounded event-scoped weights do not persist across challenges; derived from in-challenge engagement signals; clamped to configurable maximum"
     status: implemented
     test_files:
       - tests/unit/scoring/signal-ingestion.test.ts
-      - tests/unit/scoring/aggregator-wiring.test.ts
 
   - id: "20"
     title: "Stable reason-code catalog: enumerated list {RATING_SIG_INVALID, RATER_ROLE_NOT_ALLOWED, DUPLICATE_RATER_DOWNWEIGHT, COORDINATION_BURST_CAPPED, CONFIDENCE_LOWER_BOUND_FAIL, PROVENANCE_PARTIAL, RIGHTS_HOLD, AD_EVENT_PARTIAL, AD_EVENT_UNVERIFIED, ESCROW_PENDING, PAYOUT_RULESET_MISMATCH, IDEMPOTENCY_REPLAY}"
