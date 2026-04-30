@@ -18,7 +18,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { GuardianService } from "../../../src/grom/guardian-service.js";
 import type { GuardianRepository } from "../../../src/grom/guardian-repository.js";
 import type { GuardianAccount, NewGuardianInput } from "../../../src/grom/guardian-types.js";
-import type { CreateGuardianRequest } from "../../../src/grom/guardian-schemas.js";
+import { type CreateGuardianRequest, CreateGuardianSchema } from "../../../src/grom/guardian-schemas.js";
 
 // In-memory repo + pool stubs (matches rubric-service test pattern).
 class InMemoryRepo implements GuardianRepository {
@@ -111,6 +111,18 @@ describe("GuardianService", () => {
       const g = await svc.create(validRequest());
       expect(g.createdAtUtcMs).toBe(1_700_000_000_000n);
       expect(g.updatedAtUtcMs).toBe(1_700_000_000_000n);
+    });
+
+    it("test_claim_14_canonicalizes_contact_email_to_lowercase_on_persist", async () => {
+      // Code Review finding (PR #4): case-sensitive unique index
+      // would bifurcate guardian roots by email casing. Schema layer
+      // now canonicalizes to lowercase via Zod .transform(); this
+      // test threads input through the schema (mirroring the route
+      // layer) then through the service to assert the canonical
+      // form reaches storage.
+      const parsed = CreateGuardianSchema.parse({ contact_email: "Parent@Example.COM" });
+      const g = await svc.create(parsed);
+      expect(g.contactEmail).toBe("parent@example.com");
     });
   });
 

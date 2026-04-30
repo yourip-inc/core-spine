@@ -75,8 +75,13 @@ components:
         contact_email:
           type: string
           format: email
+          pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
           maxLength: 254
-          description: Guardian's contact email. Must match conservative email regex.
+          description: |
+            Guardian's contact email. Conservative ASCII-only regex; IDN TLDs,
+            quoted local parts, and bare-host addresses are rejected with
+            GUARDIAN_PAYLOAD_INVALID. Email is canonicalized to lowercase
+            before persist; clients should not rely on case preservation.
         contact_phone_hash:
           type: string
           pattern: "^[a-f0-9]{64}$"

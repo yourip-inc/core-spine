@@ -13,7 +13,7 @@ const emailRe = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const phoneHashRe = /^[a-f0-9]{64}$/;  // sha256 hex
 
 export const CreateGuardianSchema = z.object({
-  contact_email: z.string().regex(emailRe, "must be a valid email").max(254),
+  contact_email: z.string().regex(emailRe, "must be a valid email").max(254).transform((s) => s.toLowerCase()),
   contact_phone_hash: z.string().regex(phoneHashRe, "must be 64-hex-char sha256").optional(),
 }).strict();
 
