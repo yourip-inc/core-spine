@@ -36,19 +36,21 @@ describe("claim registry parser", () => {
     expect(ids).toContain("20A");
   });
 
-  it("has six legacy entries matching F-04 (claims 6, 7, 8, 9, 16, 18)", async () => {
+  it("has zero legacy entries (T1-S1-F-04 / T1-S1-F-05 reclassification complete)", async () => {
     const src = await readFile(REGISTRY_PATH, "utf8");
     const reg = parseClaimRegistry(src);
-    const legacy = reg.claims.filter((c) => c.status === "legacy").map((c) => c.id).sort();
-    expect(legacy).toEqual(["16", "18", "6", "7", "8", "9"].sort());
+    const legacy = reg.claims.filter((c) => c.status === "legacy").map((c) => c.id);
+    expect(legacy).toEqual([]);
   });
 
+  // Vacuous after F-04/F-05 (no legacy entries remain). Retained as a guard so
+  // any future re-introduction of `status: legacy` must carry rename metadata.
   it("every legacy claim declares a rename_target and rename_story", async () => {
     const src = await readFile(REGISTRY_PATH, "utf8");
     const reg = parseClaimRegistry(src);
     for (const c of reg.claims.filter((x) => x.status === "legacy")) {
       expect(c.renameTarget).toBeTruthy();
-      expect(c.renameStory).toBe("T1-S1-F-04");
+      expect(c.renameStory).toMatch(/^T\d+-S\d+-F-\d+$/);
     }
   });
 
