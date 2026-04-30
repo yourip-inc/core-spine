@@ -50,7 +50,7 @@ describe("claim registry parser", () => {
     const reg = parseClaimRegistry(src);
     for (const c of reg.claims.filter((x) => x.status === "legacy")) {
       expect(c.renameTarget).toBeTruthy();
-      expect(c.renameStory).toBe("T1-S1-F-04");
+      expect(c.renameStory).toMatch(/^T\d+-S\d+-F-\d+$/);
     }
   });
 

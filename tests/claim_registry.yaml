@@ -11,7 +11,7 @@
 # Status values:
 #   implemented  — at least one test_claim_N_* test exists AND is expected to pass
 #   placeholder  — claim not yet implemented; report renders red until the story lands
-#   legacy       — test exists under old naming (transitional); will be renamed in T1-S1-F-04
+#   legacy       — reserved for tests that genuinely predate the test_claim_N_* convention; currently held by zero claims after T1-S1-F-04/F-05 reclassification. Future legacy entries must declare rename_target and rename_story; see tests/meta/claim-coverage.test.ts for the guard.
 #
 # Title convention:
 #   Titles summarize the inventive substance of each claim using the claim's

@@ -29,7 +29,7 @@ This document is the central record of patent-claim conformance for the Core Spi
 | 12 | Versioned payout ruleset | **placeholder** | *(none yet; depends on Payout service, later sprint)* | *(none)* | — |
 | 14 | Rubric immutability post-publish | implemented | `tests/unit/rubric-service.test.ts` | `src/rubric/rubric-service.ts`, `migrations/001_rubrics.sql`, `002_rubric_weight_sum.sql` | `<pending>` |
 | 15 | Append-only event store integrity | **placeholder** | *(none yet; requires Audit Ledger service, later sprint)* | *(none)* | — |
-| 19 | Rater weights do not persist across challenges | implemented | `tests/unit/scoring/signal-ingestion.test.ts`, `aggregator-wiring.test.ts` | `src/scoring/signal-ingestion.ts`, `rater-weight-repository.ts`, `migrations/005_rater_event_weights.sql` | `<pending>` |
+| 19 | Rater weights do not persist across challenges | implemented | `tests/unit/scoring/signal-ingestion.test.ts` | `src/scoring/signal-ingestion.ts`, `rater-weight-repository.ts`, `migrations/005_rater_event_weights.sql` | `<pending>` |
 
 **Gate claim status: 6 of 9 green** (1, 3, 10, 11, 14, 19). Three red (2, 12, 15) — remediation plans in exit memo.
 
