@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: YouRip Grom Profiles API
+  version: 0.1.0
+  description: |
+    Grom Profiles API for YouRip — guardian-rooted supervised minor profile
+    system. This spec covers endpoints shipped in T2 Sprint 1 (WS-2A
+    guardian creation surface). Additional endpoints (verification flow,
+    profile creation, activity-intent interception, approval-token loop,
+    audit replay, graduation, academic credential vault) land in later
+    sprints per the Grom Profiles API Contract.
+
+    All endpoints serve `application/json` and follow the same canonical
+    JSON rules as Core Spine (sorted keys, null omission, integer-safe
+    numbers). BIGINT-valued fields are serialized as decimal strings on
+    the wire.
+
+    This spec is intentionally a separate file from `core-spine.yaml` to
+    preserve a clean T2 boundary. Shared schemas (Int64String,
+    ErrorResponse, BadRequest, NotFound, Conflict) are redefined locally
+    rather than cross-referenced via $ref to keep this file standalone
+    and tool-portable.
+
+servers:
+  - url: http://localhost:3000
+    description: Local dev
+  - url: /
+    description: Production (path-based)
+
+paths:
+  /v1/grom/guardians:
+    post:
+      summary: Create a guardian-rooted account
+      description: |
+        Story T2-S1-A-01. Patent claim 14 (guardian-rooted account
+        architecture). Creates a new GuardianAccount with
+        verification_state initialized to UNVERIFIED. Verification-state
+        transitions (UNVERIFIED → PENDING_REVIEW → VERIFIED) are
+        out of scope for this endpoint and land in A-02/A-03.
+
+        Subordinate minor profiles cannot exist independently of a
+        verified guardian account; the profile-creation gate that
+        enforces this hard requirement lands in A-04.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateGuardianRequest" }
+      responses:
+        "201":
+          description: Guardian account created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GuardianAccount" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: |
+            Conflict — duplicate contact_email. Reason code TBD pending
+            PCO sign-off; lands in follow-up commit on this branch after
+            the next PCO sync. Until that commit lands, duplicate inserts
+            surface as Postgres 23505 → 500. This is intentional during
+            the PCO-gate window.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+components:
+  schemas:
+    CreateGuardianRequest:
+      type: object
+      additionalProperties: false
+      required: [contact_email]
+      properties:
+        contact_email:
+          type: string
+          format: email
+          maxLength: 254
+          description: Guardian's contact email. Must match conservative email regex.
+        contact_phone_hash:
+          type: string
+          pattern: "^[a-f0-9]{64}$"
+          description: |
+            Optional sha256 hash of guardian's phone number (64-char hex).
+            Plaintext phone numbers are never accepted.
+
+    GuardianAccount:
+      type: object
+      required:
+        - guardian_id
+        - contact_email
+        - guardian_verification_state
+        - created_at_utc_ms
+        - updated_at_utc_ms
+      properties:
+        guardian_id:                 { type: string, format: uuid }
+        contact_email:               { type: string, format: email }
+        contact_phone_hash:          { type: string, pattern: "^[a-f0-9]{64}$" }
+        guardian_verification_state:
+          type: string
+          enum: [UNVERIFIED, PENDING_REVIEW, VERIFIED, REJECTED, REVOKED]
+          description: |
+            Lifecycle state of the guardian account. New accounts start
+            UNVERIFIED. Transitions to PENDING_REVIEW (A-02), VERIFIED /
+            REJECTED (A-03), and REVOKED (A-03) are documented in their
+            respective endpoint specs when those endpoints land.
+        created_at_utc_ms:           { $ref: "#/components/schemas/Int64String" }
+        updated_at_utc_ms:           { $ref: "#/components/schemas/Int64String" }
+
+    Int64String:
+      type: string
+      pattern: "^[0-9]+$"
+      description: |
+        64-bit integer serialized as a decimal string. BIGINT values
+        (ms timestamps, cents amounts, basis points) are serialized this
+        way to avoid IEEE-754 precision loss past 2^53. Clients should
+        parse as BigInt / long.
+
+    ErrorResponse:
+      type: object
+      required: [reason_code, message]
+      properties:
+        reason_code:
+          type: string
+          description: |
+            Stable enumerated code from the PRD §6.6 catalog. T2 reason
+            codes are namespaced under GUARDIAN_*, GROM_*, etc. Adding a
+            new code requires PCO sign-off per T1-S1-G-02.
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+
+  responses:
+    BadRequest:
+      description: Request failed validation or a domain rule.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+    Conflict:
+      description: Resource conflict (duplicate, FK violation, etc.).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
