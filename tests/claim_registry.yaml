@@ -22,7 +22,7 @@
 # Adding or removing a claim entry requires a PR with PCO sign-off per T1-S1-G-02.
 
 claims:
-  - id: "1"
+  - id: "CS-1"
     title: "Deterministic event-chain computation and cryptographic audit (independent method)"
     status: implemented
     test_files:
@@ -31,14 +31,14 @@ claims:
       - tests/unit/rating-service.test.ts
       - tests/unit/challenge-service.test.ts
 
-  - id: "2"
+  - id: "CS-2"
     title: "Engagement-signal bounded event-scoped weights (watch completion, rating frequency, recency; clamped; non-persistent)"
     status: implemented
     test_files:
       - tests/unit/scoring/bounded-weight.test.ts
       - tests/unit/scoring/signal-ingestion.test.ts
 
-  - id: "3"
+  - id: "CS-3"
     title: "Effective vote mass formula (sum_w^2 / sum_w2)"
     status: implemented
     test_files:
@@ -47,77 +47,77 @@ claims:
       - tests/unit/scoring/score-aggregator-service.test.ts
       - tests/unit/scoring/aggregator-wiring.test.ts
 
-  - id: "4"
+  - id: "CS-4"
     title: "Anti-brigading controls with COORDINATION_BURST_CAPPED downweight"
     status: placeholder
     test_files: []
     blocked_by: WS-1B-extensions or Sprint 2 anti-brigading
 
-  - id: "5"
+  - id: "CS-5"
     title: "Role-weighted aggregation (public + judge + sponsor-appointed) under common or mapped rubric version"
     status: placeholder
     test_files: []
     blocked_by: Rating Service role-weighted aggregation, Sprint 2
 
-  - id: "6"
+  - id: "CS-6"
     title: "Diversity-window tie-break by score"
     status: placeholder
     test_files: []
 
-  - id: "7"
+  - id: "CS-7"
     title: "Unverified monetization cannot release payout"
     status: placeholder
     test_files: []
 
-  - id: "8"
+  - id: "CS-8"
     title: "Slot-bound monetization event record"
     status: placeholder
     test_files: []
 
-  - id: "9"
+  - id: "CS-9"
     title: "Idempotent payout endpoint"
     status: placeholder
     test_files: []
 
-  - id: "10"
+  - id: "CS-10"
     title: "Role-aware contributor splits as basis-point map summing to 10000 (athlete + videographer)"
     status: implemented
     test_files:
       - tests/unit/submission/contributor-role.test.ts
       - tests/unit/submission/submission-routes.test.ts
 
-  - id: "11"
+  - id: "CS-11"
     title: "Mid-competition MigrationRecord with prior/new versions, reason, approver, effective timestamp, affected event list, and checksum"
     status: implemented
     test_files:
       - tests/unit/migration/migration-record.test.ts
       - tests/unit/migration/migration-service.test.ts
 
-  - id: "12"
+  - id: "CS-12"
     title: "Per-criterion score separation before overall aggregate (per-criterion transparency)"
     status: placeholder
     test_files: []
     blocked_by: Score Aggregator per-criterion breakout, Sprint 2
 
-  - id: "13"
+  - id: "CS-13"
     title: "Internal event ledger append-only or hash-chained structure"
     status: placeholder
     test_files: []
     blocked_by: Append-only event ledger, Sprint 2
 
-  - id: "13A"
+  - id: "CS-13A"
     title: "Canonical byte representation: sorted keys, null exclusion, integer-safe encoding, UTF-8, byte-identical output across runtime serialization orders"
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
 
-  - id: "13B"
+  - id: "CS-13B"
     title: "Audit bundle reproduces payout outputs from stored event hashes + version IDs without access to original runtime state"
     status: placeholder
     test_files: []
     blocked_by: Claim 22 payout-verification method, Sprint 3
 
-  - id: "14"
+  - id: "CS-14"
     title: "Platform system (independent apparatus claim): append-only event store with hash-chain integrity, end-to-end instruction sequence"
     status: implemented
     test_files:
@@ -127,47 +127,47 @@ claims:
       - tests/unit/scoring/stability-score.test.ts
       - tests/unit/scoring/winner-gate.test.ts
 
-  - id: "15"
+  - id: "CS-15"
     title: "Schema-driven rendering of rating input surfaces from locked rubric schema (labels, weight indicators, scoring ranges)"
     status: placeholder
     test_files: []
     blocked_by: Rating UI schema-driven rendering, Sprint 2
 
-  - id: "16"
+  - id: "CS-16"
     title: "Pre-aggregation quarantine for unsigned or signer-invalid rating events with reason codes"
     status: placeholder
     test_files: []
 
-  - id: "17"
+  - id: "CS-17"
     title: "Confidence-lower-bound threshold gate on winner eligibility"
     status: implemented
     test_files:
       - tests/unit/scoring/winner-gate.test.ts
 
-  - id: "18"
+  - id: "CS-18"
     title: "Sponsor report counting slot-bound monetization events satisfying a stored reporting threshold; threshold recorded with the report output"
     status: placeholder
     test_files: []
 
-  - id: "19"
+  - id: "CS-19"
     title: "Bounded event-scoped weights do not persist across challenges; derived from in-challenge engagement signals; clamped to configurable maximum"
     status: implemented
     test_files:
       - tests/unit/scoring/signal-ingestion.test.ts
 
-  - id: "20"
+  - id: "CS-20"
     title: "Stable reason-code catalog: enumerated list {RATING_SIG_INVALID, RATER_ROLE_NOT_ALLOWED, DUPLICATE_RATER_DOWNWEIGHT, COORDINATION_BURST_CAPPED, CONFIDENCE_LOWER_BOUND_FAIL, PROVENANCE_PARTIAL, RIGHTS_HOLD, AD_EVENT_PARTIAL, AD_EVENT_UNVERIFIED, ESCROW_PENDING, PAYOUT_RULESET_MISMATCH, IDEMPOTENCY_REPLAY}"
     status: placeholder
     test_files: []
     blocked_by: "Catalog incomplete: 10 of 12 enumerated codes present in reason-codes.ts. Missing AD_EVENT_UNVERIFIED (Monetization Ledger, Sprint 2) and PROVENANCE_PARTIAL (Submission Registry, Sprint 2). Flip to 'implemented' once both land in src/errors/reason-codes.ts."
 
-  - id: "20A"
+  - id: "CS-20A"
     title: "Reason codes as computational branch selectors (RIGHTS_HOLD→escrow, AD_EVENT_UNVERIFIED→exclude, RATING_SIG_INVALID→quarantine, COORDINATION_BURST_CAPPED→bounded downweight)"
     status: implemented
     test_files:
       - tests/unit/scoring/winner-gate.test.ts
 
-  - id: "21"
+  - id: "CS-21"
     title: "Computer-readable medium (independent claim): full pipeline with canonical hashing + idempotent payout"
     status: implemented
     test_files:
@@ -176,13 +176,13 @@ claims:
       - tests/unit/scoring/score-aggregator-service.test.ts
       - tests/unit/scoring/aggregator-wiring.test.ts
 
-  - id: "22"
+  - id: "CS-22"
     title: "Payout-verification method (independent): recomputation with cents-level reconciliation, upstream hash reference, reason codes for differences"
     status: placeholder
     test_files: []
     blocked_by: Payout Engine + verification harness, Sprint 3
 
-  - id: "23"
+  - id: "CS-23"
     title: "Dual-version migration replay: pre-migration rules on pre-migration events; post-migration rules on post-migration events"
     status: implemented
     test_files:
