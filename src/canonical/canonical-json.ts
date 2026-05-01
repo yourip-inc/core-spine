@@ -1,7 +1,7 @@
 /**
  * Canonical JSON serialization for YouRip Core Spine.
  *
- * PATENT-CRITICAL. Referenced by Claims 1, 14, 21.
+ * PATENT-CRITICAL. Referenced by Claims CS-1, CS-14, CS-21.
  * API Contract §8.1 (Protocol Requirements) and Flag 3 (Canonical JSON as Shared Authority).
  *
  * Rules (exact, binding for all T1-T9 implementations):
@@ -18,7 +18,7 @@
  * The event_hash for every signed event is computed over the UTF-8 bytes
  * produced by `canonicalBytes`. Any downstream track that computes a different
  * byte sequence for the same logical event will produce a different event_hash
- * and audit replay (Claim 22) will fail silently. This module MUST NOT change
+ * and audit replay (Claim CS-22) will fail silently. This module MUST NOT change
  * its byte output for any given input without a coordinated version bump across
  * all downstream tracks. See SPEC-CANONICAL-JSON-VERSION.md.
  */

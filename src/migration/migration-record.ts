@@ -2,11 +2,11 @@
  * Migration Record — types and canonical checksum.
  *
  * Story: T1-S1-D-01 through D-03.
- * Patent claims: 11 (migration record with checksum), 22 (payout verification
- * inputs), 23 (migration replay branching at recomputation time).
+ * Patent claims: CS-11 (migration record with checksum), CS-22 (payout verification
+ * inputs), CS-23 (migration replay branching at recomputation time).
  *
  * The migration_checksum is sha-256 over the canonical JSON of the seven
- * Claim-11 fields plus challenge_id. The computation is the AUTHORITY for the
+ * Claim CS-11 fields plus challenge_id. The computation is the AUTHORITY for the
  * system — the DB plpgsql version is a secondary audit helper only (see
  * migrations/007_challenge_migrations_reconstruction.sql).
  *
@@ -16,14 +16,14 @@
  *
  * Fields EXCLUDED from the checksum (D-02 spec):
  *   migration_checksum itself (chicken-and-egg)
- *   created_at_utc_ms (not part of Claim 11; bookkeeping only)
+ *   created_at_utc_ms (not part of Claim CS-11; bookkeeping only)
  *   migration_id (bookkeeping)
  */
 
 import { canonicalBytes, type CanonicalValue } from "../canonical/canonical-json.js";
 import { sha256 } from "@noble/hashes/sha256";
 
-/** Seven Claim-11 fields plus challenge_id; migration_id and created_at_utc_ms live alongside. */
+/** Seven Claim CS-11 fields plus challenge_id; migration_id and created_at_utc_ms live alongside. */
 export interface MigrationRecordCore {
   challengeId: string;
   priorRulesetVersion: string;
@@ -43,7 +43,7 @@ export interface MigrationRecord extends MigrationRecordCore {
 /**
  * Compute migration_checksum from the core fields.
  * PATENT-CRITICAL: identical core inputs → byte-identical checksum across
- * processes, OSes, and deployments. Any drift breaks Claim 22 replay.
+ * processes, OSes, and deployments. Any drift breaks Claim CS-22 replay.
  *
  * Sorting rules:
  *   - affected_event_ids is sorted lex before hashing (caller-supplied order

@@ -6,7 +6,7 @@
  *   T1-S1-A-02  Enforce weight sum = 10000
  *   T1-S1-A-03  POST /v1/rubrics and GET /v1/rubrics/{rubric_version}
  *
- * Claims: 1, 14, 21.
+ * Claims: CS-1, CS-14, CS-21.
  */
 
 import type { Pool } from "pg";

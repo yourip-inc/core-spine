@@ -1,10 +1,10 @@
 /**
  * Canonical JSON serializer tests.
  *
- * Claim coverage: test_claim_1_*, test_claim_14_*, test_claim_21_*
+ * Claim coverage: test_claim_CS_1_*, test_claim_CS_14_*, test_claim_CS_21_*
  * These tests guard Flag 3 of the API Contract: if this module's byte output
  * ever drifts, every downstream track's event_hash silently desyncs from T1
- * and audit replay (Claim 22) breaks. These fixtures are frozen and MUST NOT
+ * and audit replay (Claim CS-22) breaks. These fixtures are frozen and MUST NOT
  * be updated without a coordinated version bump of the canonical-JSON spec
  * across T1-T9.
  */
@@ -13,7 +13,7 @@ import { describe, it, expect } from "vitest";
 import { canonicalString, canonicalBytes, CanonicalJsonError } from "../../src/canonical/canonical-json.js";
 
 describe("canonical-json", () => {
-  describe("test_claim_1_deterministic_serialization", () => {
+  describe("test_claim_CS_1_deterministic_serialization", () => {
     it("sorts object keys lexicographically", () => {
       expect(canonicalString({ b: 1, a: 2 })).toBe('{"a":2,"b":1}');
       expect(canonicalString({ z: 1, a: 2, m: 3 })).toBe('{"a":2,"m":3,"z":1}');
@@ -51,7 +51,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_1_null_omission", () => {
+  describe("test_claim_CS_1_null_omission", () => {
     it("omits fields whose value is null", () => {
       expect(canonicalString({ a: 1, b: null })).toBe('{"a":1}');
     });
@@ -73,7 +73,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_14_integer_only_numbers", () => {
+  describe("test_claim_CS_14_integer_only_numbers", () => {
     it("accepts safe integer numbers", () => {
       expect(canonicalString({ ms: 1_700_000_000_000 })).toBe('{"ms":1700000000000}');
       expect(canonicalString({ bp: 10000 })).toBe('{"bp":10000}');
@@ -102,7 +102,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_14_string_escaping", () => {
+  describe("test_claim_CS_14_string_escaping", () => {
     it("escapes quote and backslash", () => {
       expect(canonicalString({ s: 'a"b' })).toBe('{"s":"a\\"b"}');
       expect(canonicalString({ s: "a\\b" })).toBe('{"s":"a\\\\b"}');
@@ -121,7 +121,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_21_byte_level_determinism", () => {
+  describe("test_claim_CS_21_byte_level_determinism", () => {
     it("two canonicalizations of the same object produce byte-identical output", () => {
       const obj = { rubric_version: "rubric_1.0", criteria: [{ criterion_key: "a", weight_bp: 10000 }] };
       const a = canonicalBytes(obj);
@@ -136,7 +136,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_21_rejects_unserializable_types", () => {
+  describe("test_claim_CS_21_rejects_unserializable_types", () => {
     it("rejects Date (use createdAtUtcMs BigInt instead)", () => {
       expect(() => canonicalString({ d: new Date() as never })).toThrow(CanonicalJsonError);
     });
@@ -179,6 +179,87 @@ describe("canonical-json", () => {
     it("rejects root null / undefined", () => {
       expect(() => canonicalString(null as never)).toThrow(CanonicalJsonError);
       expect(() => canonicalString(undefined as never)).toThrow(CanonicalJsonError);
+    });
+  });
+
+  describe("test_claim_CS_13A_canonical_byte_representation", () => {
+    /**
+     * Patent claim CS-13A umbrella test.
+     *
+     * 13A describes one composed property — the canonical byte
+     * representation — with five sub-properties: sorted keys,
+     * null-value exclusion, integer-safe encoding, UTF-8 encoding,
+     * and byte-identical output regardless of runtime serialization
+     * order. The granular per-property tests live under CS-1, CS-14,
+     * and CS-21 (deterministic serialization, integer-only numbers,
+     * null omission, byte-level determinism). This umbrella block
+     * exists so the claim-coverage harness can attribute discoverable
+     * coverage to CS-13A directly.
+     *
+     * One shared fixture exercises all five properties end-to-end.
+     * Do not decompose into per-property blocks; that would duplicate
+     * coverage already attributed to CS-1, CS-14, CS-21.
+     */
+
+    // Shared fixture exercising all five 13A sub-properties:
+    //   - sorted keys (z, m, a in input → a, m, z in output)
+    //   - null exclusion (deleted_at: null disappears in output)
+    //   - integer-safe BigInt (created_at_utc_ms as bigint emits unquoted)
+    //   - UTF-8 non-ASCII pass-through (label uses non-ASCII characters)
+    //   - byte-identical across input orders (shuffled clone matches)
+    const fixture = {
+      z_field: 100,
+      m_field: "中文テスト",
+      a_field: 200,
+      deleted_at: null,
+      created_at_utc_ms: 1_700_000_000_000n,
+    };
+
+    it("test_claim_CS_13A_emits_keys_in_sorted_order", () => {
+      const bytes = canonicalBytes(fixture);
+      const text = new TextDecoder().decode(bytes);
+      // Keys should appear in lex order: a_field < created_at_utc_ms <
+      // deleted_at < m_field < z_field. (deleted_at omitted because null.)
+      const aPos = text.indexOf("a_field");
+      const createdPos = text.indexOf("created_at_utc_ms");
+      const mPos = text.indexOf("m_field");
+      const zPos = text.indexOf("z_field");
+      expect(aPos).toBeLessThan(createdPos);
+      expect(createdPos).toBeLessThan(mPos);
+      expect(mPos).toBeLessThan(zPos);
+    });
+
+    it("test_claim_CS_13A_excludes_null_valued_fields", () => {
+      const text = canonicalString(fixture);
+      expect(text).not.toContain("deleted_at");
+      expect(text).not.toContain("null");
+    });
+
+    it("test_claim_CS_13A_encodes_bigint_as_unquoted_number", () => {
+      const text = canonicalString(fixture);
+      // BigInt emits as a JSON number, not a quoted string.
+      expect(text).toContain('"created_at_utc_ms":1700000000000');
+      expect(text).not.toContain('"created_at_utc_ms":"1700000000000"');
+    });
+
+    it("test_claim_CS_13A_preserves_non_ascii_utf8", () => {
+      const bytes = canonicalBytes(fixture);
+      const text = new TextDecoder().decode(bytes);
+      // Non-ASCII passes through verbatim per the writeString rules.
+      expect(text).toContain("中文テスト");
+    });
+
+    it("test_claim_CS_13A_byte_identical_across_input_orders", () => {
+      const shuffled = {
+        m_field: "中文テスト",
+        a_field: 200,
+        created_at_utc_ms: 1_700_000_000_000n,
+        z_field: 100,
+        deleted_at: null,
+      };
+      const bytesA = canonicalBytes(fixture);
+      const bytesB = canonicalBytes(shuffled);
+      expect(bytesA).toEqual(bytesB);
     });
   });
 });

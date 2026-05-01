@@ -2,7 +2,7 @@
  * Score Aggregator integration test.
  *
  * Story: WS-1B end-to-end — exercises T1-S1-B-02, B-03, B-04 together.
- * Claims: 1, 3, 14, 17, 20A, 21.
+ * Claims: CS-1, CS-3, CS-14, CS-17, CS-20A, CS-21.
  */
 
 import { describe, it, expect } from "vitest";
@@ -40,7 +40,7 @@ const thresholds = {
 };
 
 describe("ScoreAggregatorService", () => {
-  describe("test_claim_1_score_aggregator_end_to_end", () => {
+  describe("test_claim_CS_1_score_aggregator_end_to_end", () => {
     it("passes raters through to compute aggregate and evaluates gate (5 raters fails stability)", async () => {
       const provider = new StubProvider([
         { raterId: "r1", boundedWeight: Decimal4.parse("1.0") },
@@ -72,7 +72,7 @@ describe("ScoreAggregatorService", () => {
     });
   });
 
-  describe("test_claim_1_score_aggregator_pass_scenario_needs_enough_raters", () => {
+  describe("test_claim_CS_1_score_aggregator_pass_scenario_needs_enough_raters", () => {
     it("a submission with 30 equally-weighted raters passes both gates", async () => {
       // eff_mass = 30. mass*100 = 3000. min(3000, 9000) = 3000. Exactly at threshold.
       const provider = new StubProvider(
@@ -102,7 +102,7 @@ describe("ScoreAggregatorService", () => {
     });
   });
 
-  describe("test_claim_1_score_aggregator_empty_rater_set", () => {
+  describe("test_claim_CS_1_score_aggregator_empty_rater_set", () => {
     it("emits zero-raters reason code and fails the winner gate", async () => {
       const svc = new ScoreAggregatorService(new StubProvider([]));
       const result = await svc.compute({
@@ -125,7 +125,7 @@ describe("ScoreAggregatorService", () => {
     });
   });
 
-  describe("test_claim_21_score_aggregator_canonical_hash_is_deterministic", () => {
+  describe("test_claim_CS_21_score_aggregator_canonical_hash_is_deterministic", () => {
     it("identical inputs produce identical canonical_json_sha256", async () => {
       const weights = [
         { raterId: "r1", boundedWeight: Decimal4.parse("1.5") },
@@ -156,7 +156,7 @@ describe("ScoreAggregatorService", () => {
     });
   });
 
-  describe("test_claim_14_score_aggregator_rejects_scoring_version_mismatch", () => {
+  describe("test_claim_CS_14_score_aggregator_rejects_scoring_version_mismatch", () => {
     it("throws when input scoring_version differs from thresholds.scoring_version", async () => {
       const svc = new ScoreAggregatorService(new StubProvider([]));
       await expect(svc.compute({

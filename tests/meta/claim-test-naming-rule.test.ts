@@ -33,20 +33,20 @@ describe("claim-test-naming ESLint rule", () => {
       valid: [
         {
           filename: "tests/unit/scoring/decimal4.test.ts",
-          code: `it("test_claim_3_effective_vote_mass", () => {});`,
+          code: `it("test_claim_CS_3_effective_vote_mass", () => {});`,
         },
         {
           filename: "src/rubric/rubric-service.test.ts",
-          code: `it("test_claim_14_rubric_immutable", () => {});`,
+          code: `it("test_claim_CS_14_rubric_immutable", () => {});`,
         },
         {
           filename: "tests/unit/migration/migration-record.test.ts",
-          code: `it("test_claim_11_checksum_is_stable", () => {});`,
+          code: `it("test_claim_CS_11_checksum_is_stable", () => {});`,
         },
         {
           // `describe` blocks are group names — allowed unconstrained.
           filename: "src/scoring/foo.test.ts",
-          code: `describe("some group", () => { it("test_claim_1_ok", () => {}); });`,
+          code: `describe("some group", () => { it("test_claim_CS_1_ok", () => {}); });`,
         },
       ],
       invalid: [],

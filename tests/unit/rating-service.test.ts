@@ -2,7 +2,7 @@
  * Rating Service unit tests.
  *
  * Story T1-S1-A-05: Rating Service validates criteria_scores_bp keys against locked rubric.
- * Claim coverage: test_claim_1_*, test_claim_14_*
+ * Claim coverage: test_claim_CS_1_*, test_claim_CS_14_*
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -72,7 +72,7 @@ describe("RatingService.validateCriteriaScoresBp", () => {
     await seedPublishedRubric(rubricSvc);
   });
 
-  describe("test_claim_1_rating_schema_aligned_with_rubric", () => {
+  describe("test_claim_CS_1_rating_schema_aligned_with_rubric", () => {
     it("accepts a rating whose keys exactly match the rubric's criterion_keys", async () => {
       const res = await ratingSvc.validateCriteriaScoresBp("rubric_1.0", {
         execution: 8000,
@@ -91,7 +91,7 @@ describe("RatingService.validateCriteriaScoresBp", () => {
     });
   });
 
-  describe("test_claim_1_rating_unknown_key_rejected", () => {
+  describe("test_claim_CS_1_rating_unknown_key_rejected", () => {
     it("rejects keys not present in the rubric", async () => {
       await expect(
         ratingSvc.validateCriteriaScoresBp("rubric_1.0", {
@@ -103,7 +103,7 @@ describe("RatingService.validateCriteriaScoresBp", () => {
     });
   });
 
-  describe("test_claim_1_rating_missing_key_rejected", () => {
+  describe("test_claim_CS_1_rating_missing_key_rejected", () => {
     it("rejects payloads missing required criterion_keys", async () => {
       await expect(
         ratingSvc.validateCriteriaScoresBp("rubric_1.0", {
@@ -113,7 +113,7 @@ describe("RatingService.validateCriteriaScoresBp", () => {
     });
   });
 
-  describe("test_claim_14_rating_value_must_be_integer_in_range", () => {
+  describe("test_claim_CS_14_rating_value_must_be_integer_in_range", () => {
     it("rejects float values (canonical JSON integer-only rule)", async () => {
       await expect(
         ratingSvc.validateCriteriaScoresBp("rubric_1.0", {
@@ -142,7 +142,7 @@ describe("RatingService.validateCriteriaScoresBp", () => {
     });
   });
 
-  describe("test_claim_1_rating_references_unpublished_rubric_rejected", () => {
+  describe("test_claim_CS_1_rating_references_unpublished_rubric_rejected", () => {
     it("rejects when rubric_version is unknown", async () => {
       await expect(
         ratingSvc.validateCriteriaScoresBp("rubric_9.9", {

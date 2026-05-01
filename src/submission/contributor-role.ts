@@ -2,7 +2,7 @@
  * Contributor role vocabulary.
  *
  * Stories: T1-S1-E-02 (canonical enum), T1-S1-E-03 (alias normalization).
- * Claim: 10 (role-aware contributor splits / vocabulary).
+ * Claim: CS-10 (role-aware contributor splits / vocabulary).
  *
  * VIDEOGRAPHER is the canonical role name. FILMER is a deprecated alias
  * accepted ONLY at the public API input boundary and normalized immediately

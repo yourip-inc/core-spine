@@ -2,7 +2,7 @@
  * Effective vote mass calculator.
  *
  * Story: T1-S1-B-02.
- * Patent Claim 3: "a score aggregate comprising … an effective vote mass
+ * Patent Claim CS-3: "a score aggregate comprising … an effective vote mass
  * computed as the square of the sum of bounded weights divided by the sum of
  * squared bounded weights for the raters who rated the submission."
  *

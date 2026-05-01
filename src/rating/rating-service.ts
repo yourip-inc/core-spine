@@ -2,6 +2,7 @@
  * Rating Service — MINIMAL WS-1A scaffold.
  *
  * Story T1-S1-A-05: Rating Service validates criteria_scores_bp keys against locked rubric.
+ * Claims: CS-1, CS-14.
  *
  * Scope limits:
  *   - Full Rating Service (signed rating events, 8-step validation pipeline, quarantine)

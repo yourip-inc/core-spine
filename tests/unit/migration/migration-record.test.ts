@@ -2,7 +2,7 @@
  * Migration record checksum unit tests.
  *
  * Story: T1-S1-D-02.
- * Patent Claim 11 (migration record with checksum).
+ * Patent Claim CS-11 (migration record with checksum).
  */
 
 import { describe, it, expect } from "vitest";
@@ -33,7 +33,7 @@ function withStored(core: MigrationRecordCore): MigrationRecord {
 }
 
 describe("computeMigrationChecksum", () => {
-  it("test_claim_11_migration_record_has_seven_fields_in_checksum", () => {
+  it("test_claim_CS_11_migration_record_has_seven_fields_in_checksum", () => {
     // The checksum should change if any of the seven Claim-11 fields change.
     // This is a property guard — exercise each field.
     const ref = computeMigrationChecksum(baseCore);
@@ -51,7 +51,7 @@ describe("computeMigrationChecksum", () => {
     }
   });
 
-  it("test_claim_11_migration_checksum_is_deterministic_across_repeated_calls", () => {
+  it("test_claim_CS_11_migration_checksum_is_deterministic_across_repeated_calls", () => {
     const a = computeMigrationChecksum(baseCore);
     const b = computeMigrationChecksum(baseCore);
     const c = computeMigrationChecksum(baseCore);
@@ -60,7 +60,7 @@ describe("computeMigrationChecksum", () => {
     expect(a).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it("test_claim_11_migration_checksum_is_independent_of_affected_event_ids_order", () => {
+  it("test_claim_CS_11_migration_checksum_is_independent_of_affected_event_ids_order", () => {
     const forward  = computeMigrationChecksum({ ...baseCore, affectedEventIds: ["ev-a", "ev-b", "ev-c"] });
     const reverse  = computeMigrationChecksum({ ...baseCore, affectedEventIds: ["ev-c", "ev-b", "ev-a"] });
     const shuffled = computeMigrationChecksum({ ...baseCore, affectedEventIds: ["ev-b", "ev-c", "ev-a"] });
@@ -68,7 +68,7 @@ describe("computeMigrationChecksum", () => {
     expect(reverse).toBe(shuffled);
   });
 
-  it("test_claim_11_migration_checksum_excludes_created_at_and_migration_id", () => {
+  it("test_claim_CS_11_migration_checksum_excludes_created_at_and_migration_id", () => {
     // Two records with identical Claim-11 cores but different IDs / timestamps
     // must hash identically.
     const a = withStored(baseCore);
@@ -81,7 +81,7 @@ describe("computeMigrationChecksum", () => {
     expect(a.migrationChecksum).toBe(b.migrationChecksum);
   });
 
-  it("test_claim_11_migration_checksum_handles_empty_affected_event_ids", () => {
+  it("test_claim_CS_11_migration_checksum_handles_empty_affected_event_ids", () => {
     const empty = { ...baseCore, affectedEventIds: [] };
     const sum = computeMigrationChecksum(empty);
     expect(sum).toMatch(/^[0-9a-f]{64}$/);
@@ -90,12 +90,12 @@ describe("computeMigrationChecksum", () => {
 });
 
 describe("verifyMigrationChecksum", () => {
-  it("test_claim_11_verify_returns_true_for_untampered_row", () => {
+  it("test_claim_CS_11_verify_returns_true_for_untampered_row", () => {
     const row = withStored(baseCore);
     expect(verifyMigrationChecksum(row)).toBe(true);
   });
 
-  it("test_claim_11_checksum_detects_tampering", () => {
+  it("test_claim_CS_11_checksum_detects_tampering", () => {
     const row = withStored(baseCore);
     // Simulate a rogue UPDATE: mutate migrationReason but keep the original
     // checksum. Verification must return false.
@@ -103,7 +103,7 @@ describe("verifyMigrationChecksum", () => {
     expect(verifyMigrationChecksum(tampered)).toBe(false);
   });
 
-  it("test_claim_11_checksum_detects_tampering_on_effective_at", () => {
+  it("test_claim_CS_11_checksum_detects_tampering_on_effective_at", () => {
     const row = withStored(baseCore);
     const tampered: MigrationRecord = {
       ...row,
@@ -112,7 +112,7 @@ describe("verifyMigrationChecksum", () => {
     expect(verifyMigrationChecksum(tampered)).toBe(false);
   });
 
-  it("test_claim_11_checksum_detects_tampering_on_affected_event_ids", () => {
+  it("test_claim_CS_11_checksum_detects_tampering_on_affected_event_ids", () => {
     const row = withStored(baseCore);
     const tampered: MigrationRecord = {
       ...row,

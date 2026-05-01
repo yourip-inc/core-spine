@@ -20,7 +20,7 @@ import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { discoverTests, isExcluded } from "../../src/claim-coverage/discover.js";
+import { discoverTests, isExcluded, claimSortKey } from "../../src/claim-coverage/discover.js";
 
 describe("claim-coverage discover: exclusion", () => {
   let projectRoot: string;
@@ -41,13 +41,13 @@ describe("claim-coverage discover: exclusion", () => {
 
     await writeFile(
       join(projectRoot, "tests", "unit", "real.test.ts"),
-      `it("test_claim_1_real_test", () => {});\n`,
+      `it("test_claim_CS_1_real_test", () => {});\n`,
       "utf8",
     );
     await writeFile(
       join(projectRoot, "tests", "meta", "rule-fixture.test.ts"),
       // This string IS a literal fixture — mirrors what RuleTester does.
-      `const fixture = { code: \`it("test_claim_1_fixture_masquerading_as_test", () => {});\` };\n`,
+      `const fixture = { code: \`it("test_claim_CS_1_fixture_masquerading_as_test", () => {});\` };\n`,
       "utf8",
     );
 
@@ -59,7 +59,7 @@ describe("claim-coverage discover: exclusion", () => {
 
     // Assert: only the real test surfaces.
     expect(discovered).toHaveLength(1);
-    expect(discovered[0]?.testName).toBe("test_claim_1_real_test");
+    expect(discovered[0]?.testName).toBe("test_claim_CS_1_real_test");
     expect(discovered[0]?.file).toBe("tests/unit/real.test.ts");
   });
 
@@ -69,12 +69,12 @@ describe("claim-coverage discover: exclusion", () => {
 
     await writeFile(
       join(projectRoot, "tests", "fixtures", "sample.test.ts"),
-      `it("test_claim_3_fixture_data", () => {});\n`,
+      `it("test_claim_CS_3_fixture_data", () => {});\n`,
       "utf8",
     );
     await writeFile(
       join(projectRoot, "tests", "unit", "real.test.ts"),
-      `it("test_claim_3_real_test", () => {});\n`,
+      `it("test_claim_CS_3_real_test", () => {});\n`,
       "utf8",
     );
 
@@ -94,7 +94,7 @@ describe("claim-coverage discover: exclusion", () => {
     await mkdir(join(projectRoot, "tests", "unit", "scoring"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "unit", "scoring", "a.test.ts"),
-      `it("test_claim_3_included", () => {});\n`,
+      `it("test_claim_CS_3_included", () => {});\n`,
       "utf8",
     );
 
@@ -104,7 +104,7 @@ describe("claim-coverage discover: exclusion", () => {
     );
 
     expect(discovered).toHaveLength(1);
-    expect(discovered[0]?.testName).toBe("test_claim_3_included");
+    expect(discovered[0]?.testName).toBe("test_claim_CS_3_included");
   });
 
   it("test_claim_coverage_discover_does_not_over_exclude_meta_prefix", async () => {
@@ -114,7 +114,7 @@ describe("claim-coverage discover: exclusion", () => {
     await mkdir(join(projectRoot, "tests", "meta-integration"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "meta-integration", "b.test.ts"),
-      `it("test_claim_10_not_excluded", () => {});\n`,
+      `it("test_claim_CS_10_not_excluded", () => {});\n`,
       "utf8",
     );
 
@@ -164,7 +164,7 @@ describe("claim-coverage discover: describe() names", () => {
     await mkdir(join(projectRoot, "tests", "unit"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "unit", "a.test.ts"),
-      `describe("test_claim_19_rater_weights_scoped_to_challenge", () => {
+      `describe("test_claim_CS_19_rater_weights_scoped_to_challenge", () => {
          it("restores vote mass on per-challenge axis", () => {});
        });`,
       "utf8",
@@ -176,16 +176,16 @@ describe("claim-coverage discover: describe() names", () => {
     );
 
     expect(discovered).toHaveLength(1);
-    expect(discovered[0]?.testName).toBe("test_claim_19_rater_weights_scoped_to_challenge");
-    expect(discovered[0]?.claimId).toBe("19");
+    expect(discovered[0]?.testName).toBe("test_claim_CS_19_rater_weights_scoped_to_challenge");
+    expect(discovered[0]?.claimId).toBe("CS-19");
   });
 
   it("test_claim_coverage_discover_finds_claim_names_on_describe_only_and_describe_skip", async () => {
     await mkdir(join(projectRoot, "tests", "unit"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "unit", "a.test.ts"),
-      `describe.only("test_claim_14_only_focus", () => {});
-       describe.skip("test_claim_14_skip_focus", () => {});`,
+      `describe.only("test_claim_CS_14_only_focus", () => {});
+       describe.skip("test_claim_CS_14_skip_focus", () => {});`,
       "utf8",
     );
 
@@ -196,8 +196,8 @@ describe("claim-coverage discover: describe() names", () => {
 
     const names = discovered.map((d) => d.testName).sort();
     expect(names).toEqual([
-      "test_claim_14_only_focus",
-      "test_claim_14_skip_focus",
+      "test_claim_CS_14_only_focus",
+      "test_claim_CS_14_skip_focus",
     ]);
   });
 
@@ -207,10 +207,10 @@ describe("claim-coverage discover: describe() names", () => {
     await mkdir(join(projectRoot, "tests", "unit"), { recursive: true });
     await writeFile(
       join(projectRoot, "tests", "unit", "a.test.ts"),
-      `describe("test_claim_3_effective_vote_mass_rounds_half_even", () => {
+      `describe("test_claim_CS_3_effective_vote_mass_rounds_half_even", () => {
          it("at midpoint, rounds to even", () => {});
        });
-       it("test_claim_3_effective_vote_mass_monotonic", () => {});`,
+       it("test_claim_CS_3_effective_vote_mass_monotonic", () => {});`,
       "utf8",
     );
 
@@ -221,8 +221,8 @@ describe("claim-coverage discover: describe() names", () => {
 
     const names = discovered.map((d) => d.testName).sort();
     expect(names).toEqual([
-      "test_claim_3_effective_vote_mass_monotonic",
-      "test_claim_3_effective_vote_mass_rounds_half_even",
+      "test_claim_CS_3_effective_vote_mass_monotonic",
+      "test_claim_CS_3_effective_vote_mass_rounds_half_even",
     ]);
   });
 
@@ -234,7 +234,7 @@ describe("claim-coverage discover: describe() names", () => {
       join(projectRoot, "tests", "unit", "a.test.ts"),
       `describe("ScoreAggregator WS-1C wiring", () => {
          describe("patent AC boundary cases", () => {
-           it("test_claim_3_real_test", () => {});
+           it("test_claim_CS_3_real_test", () => {});
          });
        });`,
       "utf8",
@@ -249,6 +249,23 @@ describe("claim-coverage discover: describe() names", () => {
     // are matched by the TEST_NAME_RE alternation but filtered out by
     // CLAIM_NAME_RE's stricter shape.
     expect(discovered).toHaveLength(1);
-    expect(discovered[0]?.testName).toBe("test_claim_3_real_test");
+    expect(discovered[0]?.testName).toBe("test_claim_CS_3_real_test");
+  });
+});
+
+describe("claim-coverage discover: claimSortKey", () => {
+  it("test_claim_coverage_claim_sort_key_orders_cs_prefixed_ids", () => {
+    const ids = ["CS-13B", "CS-1", "CS-13A", "CS-20", "CS-2", "CS-13", "CS-20A", "CS-23"];
+    const sorted = [...ids].sort((a, b) => claimSortKey(a) - claimSortKey(b));
+    expect(sorted).toEqual([
+      "CS-1", "CS-2", "CS-13", "CS-13A", "CS-13B",
+      "CS-20", "CS-20A", "CS-23",
+    ]);
+  });
+
+  it("test_claim_coverage_claim_sort_key_rejects_non_cs_prefixed_ids", () => {
+    expect(claimSortKey("GP-14")).toBe(Number.MAX_SAFE_INTEGER);
+    expect(claimSortKey("14")).toBe(Number.MAX_SAFE_INTEGER);
+    expect(claimSortKey("cs-14")).toBe(Number.MAX_SAFE_INTEGER);
   });
 });

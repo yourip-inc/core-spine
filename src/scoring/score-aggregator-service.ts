@@ -1,6 +1,8 @@
 /**
  * Score Aggregator Service.
  *
+ * Claims: CS-1, CS-3, CS-14, CS-17, CS-20A, CS-21.
+ *
  * Stitches the three WS-1B pieces together:
  *   1. Fetch bounded rater weights (via RaterWeightProvider).
  *   2. Compute effective vote mass.

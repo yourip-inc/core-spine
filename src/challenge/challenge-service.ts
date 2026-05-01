@@ -2,6 +2,7 @@
  * Challenge Service — MINIMAL WS-1A scaffold.
  *
  * Story T1-S1-A-04: Challenge Service rejects lock when rubric_version unresolvable.
+ * Claims: CS-1, CS-14.
  *
  * This file intentionally implements only the rubric-lock contract path needed for
  * WS-1A acceptance. Full Challenge Service (version pinning, migration records,

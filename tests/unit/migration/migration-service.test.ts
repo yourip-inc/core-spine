@@ -2,7 +2,7 @@
  * Migration service unit tests.
  *
  * Story: T1-S1-D-02, T1-S1-D-03.
- * Claims: 11.
+ * Claims: CS-11.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -80,14 +80,14 @@ describe("MigrationRecordService.create", () => {
     svc = new MigrationRecordService(fakePool, repo, fakeClock, sink);
   });
 
-  it("test_claim_11_service_computes_checksum_server_side", async () => {
+  it("test_claim_CS_11_service_computes_checksum_server_side", async () => {
     const row = await svc.create(validCore);
     expect(row.migrationChecksum).toBe(computeMigrationChecksum(validCore));
     expect(row.migrationChecksum).toMatch(/^[0-9a-f]{64}$/);
     expect(row.createdAtUtcMs).toBe(1_700_000_000_000n);
   });
 
-  it("test_claim_11_service_rejects_client_supplied_checksum", async () => {
+  it("test_claim_CS_11_service_rejects_client_supplied_checksum", async () => {
     await expect(
       svc.create(validCore, { clientSuppliedChecksum: "a".repeat(64) }),
     ).rejects.toMatchObject({
@@ -95,7 +95,7 @@ describe("MigrationRecordService.create", () => {
     });
   });
 
-  it("test_claim_11_service_accepts_null_client_checksum_as_if_absent", async () => {
+  it("test_claim_CS_11_service_accepts_null_client_checksum_as_if_absent", async () => {
     // `null` should be treated as "client didn't supply one" so the zod path
     // (which sends `undefined` when absent) and a defensive caller (which
     // sends `null`) behave the same.
@@ -103,7 +103,7 @@ describe("MigrationRecordService.create", () => {
     expect(row.migrationChecksum).toBe(computeMigrationChecksum(validCore));
   });
 
-  it("test_claim_11_service_rejects_prior_equals_new_ruleset_version", async () => {
+  it("test_claim_CS_11_service_rejects_prior_equals_new_ruleset_version", async () => {
     await expect(
       svc.create({ ...validCore, priorRulesetVersion: "ruleset_X", newRulesetVersion: "ruleset_X" }),
     ).rejects.toMatchObject({
@@ -111,13 +111,13 @@ describe("MigrationRecordService.create", () => {
     });
   });
 
-  it("test_claim_11_service_rejects_empty_migration_reason", async () => {
+  it("test_claim_CS_11_service_rejects_empty_migration_reason", async () => {
     await expect(
       svc.create({ ...validCore, migrationReason: "   " }),
     ).rejects.toThrow(/migration_reason must be non-empty/);
   });
 
-  it("test_claim_11_service_emits_audit_event_on_success", async () => {
+  it("test_claim_CS_11_service_emits_audit_event_on_success", async () => {
     const row = await svc.create(validCore);
     expect(sink.events).toHaveLength(1);
     expect(sink.events[0]).toMatchObject({
@@ -130,7 +130,7 @@ describe("MigrationRecordService.create", () => {
     });
   });
 
-  it("test_claim_11_service_does_not_emit_audit_event_on_validation_failure", async () => {
+  it("test_claim_CS_11_service_does_not_emit_audit_event_on_validation_failure", async () => {
     await expect(
       svc.create({ ...validCore, priorRulesetVersion: "x", newRulesetVersion: "x" }),
     ).rejects.toBeDefined();
@@ -152,16 +152,16 @@ describe("MigrationRecordService.verify", () => {
     );
   });
 
-  it("test_claim_11_verify_returns_true_for_untampered_row", async () => {
+  it("test_claim_CS_11_verify_returns_true_for_untampered_row", async () => {
     const row = await svc.create(validCore);
     expect(await svc.verify(row.migrationId)).toBe(true);
   });
 
-  it("test_claim_11_verify_returns_false_for_unknown_id", async () => {
+  it("test_claim_CS_11_verify_returns_false_for_unknown_id", async () => {
     expect(await svc.verify("nonexistent-id")).toBe(false);
   });
 
-  it("test_claim_11_verify_returns_false_after_simulated_tampering", async () => {
+  it("test_claim_CS_11_verify_returns_false_after_simulated_tampering", async () => {
     const row = await svc.create(validCore);
     // Simulate a rogue DBA mutating a field in place via direct SQL.
     const stored = repo.rows.find((r) => r.migrationId === row.migrationId)!;
@@ -171,7 +171,7 @@ describe("MigrationRecordService.verify", () => {
 });
 
 describe("MigrationRecordService.listByChallenge", () => {
-  it("test_claim_23_listByChallenge_returns_migrations_in_effective_order_for_replay", async () => {
+  it("test_claim_CS_23_list_by_challenge_returns_migrations_in_effective_order_for_replay", async () => {
     const repo = new InMemoryRepo();
     const svc = new MigrationRecordService(
       fakePool,
@@ -192,8 +192,8 @@ describe("MigrationRecordService.listByChallenge", () => {
     ]);
   });
 
-  it("test_claim_23_listByChallenge_asOfUtcMs_filters_out_future_migrations_for_replay_branching", async () => {
-    // This is the Claim 23 branching semantic: when replaying an event at
+  it("test_claim_CS_23_list_by_challenge_as_of_utc_ms_filters_out_future_migrations_for_replay_branching", async () => {
+    // This is the Claim CS-23 branching semantic: when replaying an event at
     // time T, we only apply migrations whose effective_at_utc_ms <= T.
     const repo = new InMemoryRepo();
     const svc = new MigrationRecordService(

@@ -2,7 +2,7 @@
  * Engagement signal ingestion.
  *
  * Story: T1-S1-C-03.
- * Claims: 2 (engagement signals), 19 (per-challenge scoping).
+ * Claims: CS-2 (engagement signals), CS-19 (per-challenge scoping).
  *
  * Sources three signals per (challenge_id, rater_id) from the playback-event
  * telemetry pipeline and upserts bounded_weight rows into rater_event_weights.
@@ -14,7 +14,7 @@
  * Scoping: telemetry records must be scoped to within-challenge events. The
  * TelemetrySource interface requires a challenge_id argument and it MUST only
  * return events from that challenge. Cross-challenge aggregation would
- * violate Claim 19 and produces a broken audit record.
+ * violate Claim CS-19 and produces a broken audit record.
  *
  * Missing signals: a rater with partial telemetry (say, watch completion but
  * no frequency data) receives zero for the missing signals. Missing signals
@@ -46,7 +46,7 @@ export interface RaterSignalRecord {
 export interface TelemetrySource {
   /**
    * Fetch signal records for the given challenge. Must filter to
-   * within-challenge events only — Claim 19 non-persistence requirement.
+   * within-challenge events only — Claim CS-19 non-persistence requirement.
    */
   fetchSignalsForChallenge(challengeId: string): Promise<RaterSignalRecord[]>;
 }
@@ -86,7 +86,7 @@ export class EngagementSignalIngestor {
         throw new Error(
           `EngagementSignalIngestor: telemetry returned cross-challenge record ` +
           `(expected ${challengeId}, got ${record.challengeId}) for rater ${record.raterId}. ` +
-          `This violates Claim 19.`,
+          `This violates Claim CS-19.`,
         );
       }
 

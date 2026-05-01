@@ -2,8 +2,8 @@
  * Test discovery for claim-coverage report.
  *
  * Walks the tests/ tree, reads each *.test.ts file, and extracts names of
- * `it("test_claim_N_...", ...)` / `test("test_claim_N_...", ...)` /
- * `describe("test_claim_N_...", ...)` calls.
+ * `it("test_claim_CS_N_...", ...)` / `test("test_claim_CS_N_...", ...)` /
+ * `describe("test_claim_CS_N_...", ...)` calls.
  *
  * We do NOT use a full TS parser here — a simple regex over the source file
  * is sufficient and keeps this tool dep-free. False positives (commented-out
@@ -12,7 +12,7 @@
  * when it runs.
  *
  * The report generator separately runs vitest to determine pass/fail. This
- * module only answers the question "which test_claim_N_ names exist and where".
+ * module only answers the question "which test_claim_CS_N_ names exist and where".
  *
  * Audit §4.1 remediation (2026-04-22): the walker skips paths whose
  * project-relative location starts with a configured exclusion prefix.
@@ -20,9 +20,9 @@
  * source-string fixtures used by the ESLint meta-tests.
  *
  * Audit §4.2 remediation (follow-up): `describe` is now in the call-name
- * alternation. The repo uses `describe("test_claim_N_...")` as a block-
+ * alternation. The repo uses `describe("test_claim_CS_N_...")` as a block-
  * grouping convention in ~8 files where the previous regex left
- * `test_claim_N_` names invisible to discovery. Widening the alternation
+ * `test_claim_CS_N_` names invisible to discovery. Widening the alternation
  * only matters AFTER §4.1 lands — without the meta-directory exclusion,
  * the widened regex also matches `describe(...)` calls inside RuleTester
  * fixture strings, increasing false positives. PR ordering: 4.1+4.3 first,
@@ -33,15 +33,15 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { join, extname, relative, sep } from "node:path";
 
 const TEST_NAME_RE = /\b(?:it|test|describe)(?:\.skip|\.only)?\s*\(\s*["']([^"']+)["']/g;
-const CLAIM_NAME_RE = /^test_claim_(\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
+const CLAIM_NAME_RE = /^test_claim_(CS_\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
 
 /** Default exclusion list. Kept alongside the walker so it is discoverable
  *  to anyone grepping for why a test file is being skipped. */
 export const DEFAULT_DISCOVER_EXCLUSIONS: readonly string[] = ["tests/meta"];
 
 export interface DiscoveredTest {
-  claimId: string;       // "1", "13A", etc.
-  testName: string;      // full test_claim_N_...
+  claimId: string;       // "CS-1", "CS-13A", etc. (hyphen form, post-discovery transform)
+  testName: string;      // full test_claim_CS_N_...
   file: string;          // relative path from project root
 }
 
@@ -72,7 +72,7 @@ export async function discoverTests(
       const claimMatch = name.match(CLAIM_NAME_RE);
       if (!claimMatch) continue;
       out.push({
-        claimId: claimMatch[1]!,
+        claimId: claimMatch[1]!.replace("_", "-"),
         testName: name,
         file: relPath,
       });
@@ -89,10 +89,10 @@ export async function discoverTests(
 }
 
 /**
- * Sort key that orders "1" < "13" < "13A" < "13B" < "14" < "20" < "20A" < "21".
+ * Sort key that orders "CS-1" < "CS-13" < "CS-13A" < "CS-13B" < "CS-14" < "CS-20" < "CS-20A" < "CS-21".
  */
 export function claimSortKey(id: string): number {
-  const m = id.match(/^(\d+)([A-Z]?)$/);
+  const m = id.match(/^CS-(\d+)([A-Z]?)$/);
   if (!m) return Number.MAX_SAFE_INTEGER;
   const n = Number(m[1]);
   const letter = m[2] ? m[2].charCodeAt(0) - 0x40 : 0; // A=1, B=2, 0 if none

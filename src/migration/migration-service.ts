@@ -2,7 +2,7 @@
  * Migration Record Service.
  *
  * Stories: T1-S1-D-02 (checksum computation), T1-S1-D-03 (HTTP create path).
- * Claims: 11 (migration record), 22 (replay inputs), 23 (replay branching).
+ * Claims: CS-11 (migration record), CS-22 (replay inputs), CS-23 (replay branching).
  *
  * Responsibilities:
  *   - Compute migration_checksum from core fields (D-02).
@@ -58,7 +58,7 @@ export class MigrationRecordService {
 
   /**
    * Create a migration record. Server computes migration_checksum from the
-   * seven Claim-11 fields; any client-supplied checksum is rejected with
+   * Seven Claim CS-11 fields; any client-supplied checksum is rejected with
    * MIGRATION_CLIENT_CHECKSUM_REJECTED (D-03 AC).
    */
   async create(

@@ -14,7 +14,7 @@
  *   - bounded_weight is a Decimal4 in range [0, max_weight_multiplier].
  *     Default max_weight_multiplier is 2.0000 per the patent embodiment
  *     (paragraph 333 of the Core Spine non-provisional).
- *   - Claim 19: weights do not persist across challenges. Keys are
+ *   - Claim CS-19: weights do not persist across challenges. Keys are
  *     (challenge_id, rater_id); the same rater_id in two challenges has
  *     two independent rows.
  */
