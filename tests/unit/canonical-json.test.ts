@@ -215,7 +215,7 @@ describe("canonical-json", () => {
       created_at_utc_ms: 1_700_000_000_000n,
     };
 
-    it("emits keys in sorted order regardless of input key order", () => {
+    it("test_claim_CS_13A_emits_keys_in_sorted_order", () => {
       const bytes = canonicalBytes(fixture);
       const text = new TextDecoder().decode(bytes);
       // Keys should appear in lex order: a_field < created_at_utc_ms <
@@ -229,27 +229,27 @@ describe("canonical-json", () => {
       expect(mPos).toBeLessThan(zPos);
     });
 
-    it("excludes null-valued fields from the output", () => {
+    it("test_claim_CS_13A_excludes_null_valued_fields", () => {
       const text = canonicalString(fixture);
       expect(text).not.toContain("deleted_at");
       expect(text).not.toContain("null");
     });
 
-    it("encodes BigInt time values as unquoted JSON numbers", () => {
+    it("test_claim_CS_13A_encodes_bigint_as_unquoted_number", () => {
       const text = canonicalString(fixture);
       // BigInt emits as a JSON number, not a quoted string.
       expect(text).toContain('"created_at_utc_ms":1700000000000');
       expect(text).not.toContain('"created_at_utc_ms":"1700000000000"');
     });
 
-    it("preserves non-ASCII characters as UTF-8 bytes (no escaping)", () => {
+    it("test_claim_CS_13A_preserves_non_ascii_utf8", () => {
       const bytes = canonicalBytes(fixture);
       const text = new TextDecoder().decode(bytes);
       // Non-ASCII passes through verbatim per the writeString rules.
       expect(text).toContain("中文テスト");
     });
 
-    it("produces byte-identical output for semantically-equal inputs in different key orders", () => {
+    it("test_claim_CS_13A_byte_identical_across_input_orders", () => {
       const shuffled = {
         m_field: "中文テスト",
         a_field: 200,

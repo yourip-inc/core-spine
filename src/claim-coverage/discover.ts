@@ -2,7 +2,7 @@
  * Test discovery for claim-coverage report.
  *
  * Walks the tests/ tree, reads each *.test.ts file, and extracts names of
- * `it("test_test_claim_CS_N_...", ...)` / `test("test_claim_CS_N_...", ...)` /
+ * `it("test_claim_CS_N_...", ...)` / `test("test_claim_CS_N_...", ...)` /
  * `describe("test_claim_CS_N_...", ...)` calls.
  *
  * We do NOT use a full TS parser here — a simple regex over the source file
