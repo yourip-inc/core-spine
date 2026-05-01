@@ -9,7 +9,7 @@
  * the test file sits inside a patent-adjacent package.
  *
  * Patent-adjacent = any file whose path contains one of:
- *   /canonical/  /rubric/  /rating/  /challenge/  /scoring/  /payout/  /audit/  /replay/
+ *   /canonical/  /rubric/  /rating/  /challenge/  /scoring/  /payout/  /audit/  /replay/  /migration/  /submission/
  *
  * This rule is custom (not published) and lives under `eslint-rules/`. See
  * .eslintrc.cjs for how it's loaded.
@@ -24,7 +24,7 @@
 // NOTE: the `-` in the char classes is at the END (literal hyphen, not a range).
 const PATENT_ADJACENT_RE =
   /[/\\.-](canonical|rubric|rating|challenge|scoring|payout|audit|replay|migration|submission)[/\\.-]/i;
-const CLAIM_NAME_RE = /^test_claim_(\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
+const CLAIM_NAME_RE = /^test_claim_(CS_\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
 
 const SOW_LINK = "See docs/patent-conformance-sow.md#test-naming";
 

@@ -33,7 +33,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { join, extname, relative, sep } from "node:path";
 
 const TEST_NAME_RE = /\b(?:it|test|describe)(?:\.skip|\.only)?\s*\(\s*["']([^"']+)["']/g;
-const CLAIM_NAME_RE = /^test_claim_(\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
+const CLAIM_NAME_RE = /^test_claim_(CS_\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
 
 /** Default exclusion list. Kept alongside the walker so it is discoverable
  *  to anyone grepping for why a test file is being skipped. */
@@ -72,7 +72,7 @@ export async function discoverTests(
       const claimMatch = name.match(CLAIM_NAME_RE);
       if (!claimMatch) continue;
       out.push({
-        claimId: claimMatch[1]!,
+        claimId: claimMatch[1]!.replace("_", "-"),
         testName: name,
         file: relPath,
       });
