@@ -89,7 +89,7 @@ export async function discoverTests(
 }
 
 /**
- * Sort key that orders "1" < "13" < "13A" < "13B" < "14" < "20" < "20A" < "21".
+ * Sort key that orders "CS-1" < "CS-13" < "CS-13A" < "CS-13B" < "CS-14" < "CS-20" < "CS-20A" < "CS-21".
  */
 export function claimSortKey(id: string): number {
   const m = id.match(/^CS-(\d+)([A-Z]?)$/);

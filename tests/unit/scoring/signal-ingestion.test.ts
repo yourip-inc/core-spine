@@ -108,7 +108,7 @@ describe("EngagementSignalIngestor", () => {
   describe("test_claim_CS_19_ingestion_rejects_cross_challenge_telemetry", () => {
     it("refuses to persist a signal record whose challenge_id does not match the requested challenge", async () => {
       // Telemetry returns a record for challenge-B even though we asked for challenge-A.
-      // This should throw — per Claim 19, weights must not cross challenge boundaries.
+      // This should throw — per Claim CS-19, weights must not cross challenge boundaries.
       const { ingestor } = makeIngestor(
         new Map([
           ["challenge-A", [
@@ -165,7 +165,7 @@ describe("EngagementSignalIngestor", () => {
 
   describe("test_claim_CS_19_ingestion_scopes_to_requested_challenge", () => {
     it("ingesting challenge-A does not touch rows from challenge-B", async () => {
-      // Two challenges with overlapping rater_id "r1" — per Claim 19, these
+      // Two challenges with overlapping rater_id "r1" — per Claim CS-19, these
       // are independent rows keyed by (challenge_id, rater_id).
       const { ingestor, repo } = makeIngestor(
         new Map([

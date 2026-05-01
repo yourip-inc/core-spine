@@ -116,7 +116,7 @@ claims:
     title: "Audit bundle reproduces payout outputs from stored event hashes + version IDs without access to original runtime state"
     status: placeholder
     test_files: []
-    blocked_by: Claim 22 payout-verification method, Sprint 3
+    blocked_by: Claim CS-22 payout-verification method, Sprint 3
 
   - id: "CS-14"
     title: "Platform system (independent apparatus claim): append-only event store with hash-chain integrity, end-to-end instruction sequence"

@@ -128,7 +128,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
   describe("version binding", () => {
     it("test_claim_CS_1_winner_gate_echoes_scoring_version_in_result_for_audit", () => {
       // The gate result includes scoring_version so it can be persisted onto
-      // the aggregate row for audit-bundle replay (Claim 21, Claim 23).
+      // the aggregate row for audit-bundle replay (Claim CS-21, Claim CS-23).
       const r = evaluateWinnerGate({ meanBp: 7000, stabilityScore: 5000 }, thresholds);
       expect(r.scoringVersion).toBe(CURRENT_SCORING_VERSION);
       expect(r.scoreThresholdBp).toBe(thresholds.scoreThresholdBp);

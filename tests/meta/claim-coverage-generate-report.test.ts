@@ -214,7 +214,7 @@ claims:
   });
 
   it("test_claim_coverage_report_keeps_yellow_legacy_when_some_paths_ok", async () => {
-    // Mixed case modeled on Claim 21 in the real registry — one real path,
+    // Mixed case modeled on Claim CS-21 in the real registry — one real path,
     // one phantom path. Legacy branch keeps yellow with diagnostics.
     //
     // Subtle: the real file's content must contain `test_claim_CS_21_*` in a

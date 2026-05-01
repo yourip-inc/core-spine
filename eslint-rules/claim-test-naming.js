@@ -1,11 +1,11 @@
 /**
- * Custom ESLint rule: test_claim_N_* naming convention for patent-adjacent packages.
+ * Custom ESLint rule: test_claim_{PREFIX}_{N}_* naming convention for patent-adjacent packages.
  *
  * Story: T1-S1-F-01
  * Patent conformance SOW: docs/patent-conformance-sow.md (to author in T1-S1-G-03)
  *
  * Flags any vitest `describe(...)` or `it(...)` / `test(...)` call whose first
- * argument is a string literal that does not begin with `test_claim_{N}_` when
+ * argument is a string literal that does not begin with `test_claim_{PREFIX}_{N}_` when
  * the test file sits inside a patent-adjacent package.
  *
  * Patent-adjacent = any file whose path contains one of:
@@ -34,14 +34,14 @@ module.exports = {
     type: "problem",
     docs: {
       description:
-        "Enforce test_claim_{N}_* naming for tests in patent-adjacent packages.",
+        "Enforce test_claim_{PREFIX}_{N}_* naming convention for tests in patent-adjacent packages.",
     },
     messages: {
       badName:
-        "Test name '{{name}}' must match test_claim_{N}_<description> in patent-adjacent packages (found in {{path}}). " +
+        "Test name '{{name}}' must match test_claim_{PREFIX}_{N}_<description> in patent-adjacent packages (e.g., test_claim_CS_14_…) (found in {{path}}). " +
         SOW_LINK,
       nonStringArg:
-        "Test name in patent-adjacent packages must be a string literal so the test_claim_N_ convention can be linted. " +
+        "Test name in patent-adjacent packages must be a string literal so the test_claim_{PREFIX}_{N}_ convention can be linted. " +
         SOW_LINK,
     },
     schema: [],
