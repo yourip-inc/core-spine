@@ -58,7 +58,7 @@ export class MigrationRecordService {
 
   /**
    * Create a migration record. Server computes migration_checksum from the
-   * seven Claim-11 fields; any client-supplied checksum is rejected with
+   * Seven Claim CS-11 fields; any client-supplied checksum is rejected with
    * MIGRATION_CLIENT_CHECKSUM_REJECTED (D-03 AC).
    */
   async create(

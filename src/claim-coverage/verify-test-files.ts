@@ -9,8 +9,8 @@
  *   1. Phantom paths render as coverage (7 legacy claims list
  *      `tests/legacy/*.test.ts` paths that do not exist on disk).
  *   2. Files that exist but contain only differently-named tests render as
- *      coverage (4 implemented claims — 13A, 13B, 19, 23 — have registry
- *      entries pointing at files whose `test_claim_N_*` names do not match
+ *      coverage (4 implemented claims — CS-13A, CS-13B, CS-19, CS-23 — have registry
+ *      entries pointing at files whose `test_claim_CS_N_*` names do not match
  *      the registry's claim ID).
  *
  * A verified file must (a) exist and (b) contain at least one
@@ -45,9 +45,9 @@ export interface VerifyResult {
  * as-is (an escape hatch for tests; registry paths are always relative).
  *
  * Only `test_claim_${claimId}_*` names count as a match. The regex matches
- * the token boundary both sides so `test_claim_13_` does not satisfy a
- * lookup for claim `"1"` and vice-versa. `13A` correctly rejects `13` and
- * `13B`.
+ * the token boundary both sides so `test_claim_CS_1_` does not satisfy a
+ * lookup for claim `"CS-1"` and vice-versa. `CS-13A` correctly rejects `CS-13` and
+ * `CS-13B`.
  *
  * This function does NOT call vitest, does NOT execute tests, and does NOT
  * check that the named test passes at runtime. Pass/fail overlay is already
@@ -103,9 +103,9 @@ export async function verifyTestFiles(
 }
 
 /**
- * Build a regex that matches a `test_claim_${claimId}_` token in source.
+ * Build a regex that matches a `test_claim_CS_N[claimId]?` token in source.
  *
- * Claim IDs are alphanumeric (`1`, `13A`, `20A`) and must not regex-escape;
+ * Claim IDs are alphanumeric (`CS-1`, `CS-13A`, `CS-20A`) and must not regex-escape;
  * asserting that here keeps a future registry change from introducing a
  * regex injection.
  */
@@ -117,7 +117,7 @@ function buildClaimNameRegex(claimId: string): RegExp {
     );
   }
   // Bounded by word boundary on the left (so `foo_test_claim_1_` does not
-  // match a lookup for "1"), and an explicit underscore+letter on the right
+  // match a lookup for "CS-1"), and an explicit underscore+letter on the right
   // (mirroring the CLAIM_NAME_RE in discover.ts).
   const testNameId = claimId.replace("-", "_");
   return new RegExp(`\\btest_claim_${testNameId}_[a-z][a-z0-9_]*\\b`);

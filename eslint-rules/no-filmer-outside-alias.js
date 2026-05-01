@@ -2,7 +2,7 @@
  * Custom ESLint rule: reject FILMER references outside the alias-normalization layer.
  *
  * Story: T1-S1-E-02.
- * Claim: 10 (vocabulary alignment — VIDEOGRAPHER canonical).
+ * Claim: CS-10 (vocabulary alignment — VIDEOGRAPHER canonical).
  *
  * Allowed paths (FILMER can appear here):
  *   - src/submission/contributor-role.ts (the alias layer itself)

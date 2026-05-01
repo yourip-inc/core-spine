@@ -2,8 +2,8 @@
  * Test discovery for claim-coverage report.
  *
  * Walks the tests/ tree, reads each *.test.ts file, and extracts names of
- * `it("test_claim_N_...", ...)` / `test("test_claim_N_...", ...)` /
- * `describe("test_claim_N_...", ...)` calls.
+ * `it("test_test_claim_CS_N_...", ...)` / `test("test_claim_CS_N_...", ...)` /
+ * `describe("test_claim_CS_N_...", ...)` calls.
  *
  * We do NOT use a full TS parser here — a simple regex over the source file
  * is sufficient and keeps this tool dep-free. False positives (commented-out
@@ -12,7 +12,7 @@
  * when it runs.
  *
  * The report generator separately runs vitest to determine pass/fail. This
- * module only answers the question "which test_claim_N_ names exist and where".
+ * module only answers the question "which test_claim_CS_N_ names exist and where".
  *
  * Audit §4.1 remediation (2026-04-22): the walker skips paths whose
  * project-relative location starts with a configured exclusion prefix.
@@ -20,9 +20,9 @@
  * source-string fixtures used by the ESLint meta-tests.
  *
  * Audit §4.2 remediation (follow-up): `describe` is now in the call-name
- * alternation. The repo uses `describe("test_claim_N_...")` as a block-
+ * alternation. The repo uses `describe("test_claim_CS_N_...")` as a block-
  * grouping convention in ~8 files where the previous regex left
- * `test_claim_N_` names invisible to discovery. Widening the alternation
+ * `test_claim_CS_N_` names invisible to discovery. Widening the alternation
  * only matters AFTER §4.1 lands — without the meta-directory exclusion,
  * the widened regex also matches `describe(...)` calls inside RuleTester
  * fixture strings, increasing false positives. PR ordering: 4.1+4.3 first,
@@ -40,8 +40,8 @@ const CLAIM_NAME_RE = /^test_claim_(CS_\d+[A-Z]?)_[a-z][a-z0-9_]*$/;
 export const DEFAULT_DISCOVER_EXCLUSIONS: readonly string[] = ["tests/meta"];
 
 export interface DiscoveredTest {
-  claimId: string;       // "1", "13A", etc.
-  testName: string;      // full test_claim_N_...
+  claimId: string;       // "CS-1", "CS-13A", etc. (hyphen form, post-discovery transform)
+  testName: string;      // full test_claim_CS_N_...
   file: string;          // relative path from project root
 }
 

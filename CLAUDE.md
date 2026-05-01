@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-YouRip **T1 Core Spine** — a TypeScript + Fastify + Postgres server implementing the PRD-T1-CORE-SPINE and PRD-T1-API contracts. This is a *patent-adjacent* codebase: most of `src/` corresponds directly to specific patent claims (1, 3, 10, 11, 13A, 14, 19, 21, 23). Treat changes to those directories accordingly — see "Patent conformance" below.
+YouRip **T1 Core Spine** — a TypeScript + Fastify + Postgres server implementing the PRD-T1-CORE-SPINE and PRD-T1-API contracts. This is a *patent-adjacent* codebase: most of `src/` corresponds directly to specific patent claims (CS-1, CS-3, CS-10, CS-11, CS-13A, CS-14, CS-19, CS-21, CS-23). Treat changes to those directories accordingly — see "Patent conformance" below.
 
 Sprint 1 (WS-1A through WS-1G) is complete; open work is tracked in `ACCEPTANCE.md` §"Open for next sprint follow-up". `docs/history/MERGE_MANIFEST.md` records how this tree was assembled from upstream zips — only useful if auditing history.
 
@@ -25,7 +25,7 @@ npm run claim-coverage:report                # writes coverage-report/claim-cove
 
 # Single test file / single test name
 npx vitest run tests/unit/rubric-service.test.ts
-npx vitest run -t "test_claim_1_deterministic_serialization"
+npx vitest run -t "test_claim_CS_1_deterministic_serialization"
 
 # Local stack (postgres + migrate + server)
 docker compose up postgres migrate
@@ -37,13 +37,13 @@ Node 20.10+. `DATABASE_URL=postgres://postgres:postgres@localhost:5432/core_spin
 
 HTTP → service → repository → Postgres. Wiring is in `src/http/server.ts::buildServer`. Services take a `pg.Pool` and a repo interface so tests inject in-memory fakes.
 
-- **`src/canonical/`** — `canonical-json.ts` (sorted keys, null omission, integers only, no floats, UTF-8 bytes, no whitespace) and `event-hash.ts`. **Patent-critical.** `event_hash` is SHA-256 over `canonicalBytes(...)`; Ed25519 signatures are over the 32-byte digest, **never** raw JSON. Byte output MUST NOT change for a given input without a coordinated version bump across T1–T9 (golden fixture: `tests/unit/canonical-json.test.ts :: test_claim_1_deterministic_serialization`).
+- **`src/canonical/`** — `canonical-json.ts` (sorted keys, null omission, integers only, no floats, UTF-8 bytes, no whitespace) and `event-hash.ts`. **Patent-critical.** `event_hash` is SHA-256 over `canonicalBytes(...)`; Ed25519 signatures are over the 32-byte digest, **never** raw JSON. Byte output MUST NOT change for a given input without a coordinated version bump across T1–T9 (golden fixture: `tests/unit/canonical-json.test.ts :: test_claim_CS_1_deterministic_serialization`.
 - **`src/scoring/`** — `Decimal4` stores values as BigInt at scale 10_000. Division **truncates** (floor for positives), not half-away-from-zero — this matches the AC fixture `[2.0, 1.0, 1.0] → n_eff = 2.6666`. Documented in `decimal4.ts` top comment; any rounding change breaks the patent example in paragraph 333.
 - **`src/rubric/`** — rubrics are immutable after publish. Enforcement is layered: Zod schema → app check (`RUBRIC_WEIGHT_SUM_INVALID` when criteria `weight_bp` sum ≠ 10000) → DB trigger `rubrics_no_update_after_publish_trg` → deferred weight-sum constraint. All three must agree.
 - **`src/migration/`** — Claim CS-11 migration records. `migration_checksum` is computed in TypeScript; the plpgsql `verify_migration_checksum()` exists as an audit cross-check and is deliberately NOT attached to an INSERT trigger (TS-vs-plpgsql string-escape divergence would cause silent drift per API Contract Flag 3). TS is authoritative.
 - **`src/errors/reason-codes.ts`** — locked enum; **renaming a code is prohibited** (PRD §6.6). Adding one requires PCO sign-off (T1-S1-G-02) and a new registry row if claim-relevant.
 - **`src/submission/contributor-role.ts`** — 4 canonical roles + `FILMER` deprecated alias. `FILMER` stays in the Postgres enum for one release cycle (PG can't remove enum values); the `no-filmer-outside-alias` ESLint rule blocks new references outside the alias-normalization layer. Sunset target `2026-10-01`.
-- **`src/claim-coverage/`** — harness that reads `tests/claim_registry.yaml`, scans `tests/**/*.test.ts` for `test_claim_N_*` names, consumes `.vitest-results.json`, and renders `coverage-report/claim-coverage.{md,html}`. Exits non-zero on `red_failing` only; `red_missing`/placeholder is informational.
+- **`src/claim-coverage/`** — harness that reads `tests/claim_registry.yaml`, scans `tests/**/*.test.ts` for `test_claim_CS_N_*` names, consumes `.vitest-results.json`, and renders `coverage-report/claim-coverage.{md,html}`. Exits non-zero on `red_failing` only; `red_missing`/placeholder is informational.
 
 ### Patent conformance
 
