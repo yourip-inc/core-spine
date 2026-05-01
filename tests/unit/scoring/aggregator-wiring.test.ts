@@ -65,7 +65,7 @@ function baseInput(overrides: Partial<{ challengeId: string; acceptedRaterIds: s
 }
 
 describe("ScoreAggregator WS-1C wiring", () => {
-  describe("test_claim_3_effective_vote_mass_formula_with_real_weights", () => {
+  describe("test_claim_CS_3_effective_vote_mass_formula_with_real_weights", () => {
     it("produces sum_w = 3.3 and sum_w2 = 3.89 for AC fixture [1.0, 1.5, 0.8]", async () => {
       const provider = new LookupStub(
         new Map([
@@ -87,7 +87,7 @@ describe("ScoreAggregator WS-1C wiring", () => {
     });
   });
 
-  describe("test_claim_3_effective_vote_mass_missing_weight_defaults_to_one", () => {
+  describe("test_claim_CS_3_effective_vote_mass_missing_weight_defaults_to_one", () => {
     it("emits RATER_WEIGHT_DEFAULTED when an accepted rater has no stored weight row", async () => {
       // r2 has a stored row; r1 and r3 do not.
       const provider = new LookupStub(new Map([["r2", d("1.5")]]));
@@ -116,7 +116,7 @@ describe("ScoreAggregator WS-1C wiring", () => {
     });
   });
 
-  describe("test_claim_21_aggregate_replay_byte_identical", () => {
+  describe("test_claim_CS_21_aggregate_replay_byte_identical", () => {
     it("two calls with identical inputs produce identical canonical_json_sha256", async () => {
       const provider = new LookupStub(
         new Map([
@@ -148,7 +148,7 @@ describe("ScoreAggregator WS-1C wiring", () => {
     });
   });
 
-  describe("test_claim_1_aggregator_accepts_empty_rater_list", () => {
+  describe("test_claim_CS_1_aggregator_accepts_empty_rater_list", () => {
     it("empty acceptedRaterIds → zero-raters reason code, no defaulted code", async () => {
       const provider = new LookupStub(new Map());
       const svc = new ScoreAggregatorService(provider);

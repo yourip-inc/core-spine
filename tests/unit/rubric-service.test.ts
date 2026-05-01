@@ -1,7 +1,7 @@
 /**
  * Rubric service unit tests (stubbed repo — no DB).
  *
- * Claim coverage: test_claim_1_*, test_claim_14_*
+ * Claim coverage: test_claim_CS_1_*, test_claim_CS_14_*
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -83,7 +83,7 @@ describe("RubricService", () => {
     };
   }
 
-  describe("test_claim_14_rubric_weight_sum_must_equal_10000", () => {
+  describe("test_claim_CS_14_rubric_weight_sum_must_equal_10000", () => {
     it("accepts a rubric whose criteria weight_bp sum to 10000", async () => {
       const rubric = await svc.create(validRequest());
       expect(rubric.criteria.reduce((s, c) => s + c.weightBp, 0)).toBe(10000);
@@ -112,7 +112,7 @@ describe("RubricService", () => {
     });
   });
 
-  describe("test_claim_14_rubric_duplicate_criterion_keys_rejected", () => {
+  describe("test_claim_CS_14_rubric_duplicate_criterion_keys_rejected", () => {
     it("rejects duplicate criterion_keys even if total weight_bp sums to 10000", async () => {
       const bad = validRequest({
         criteria: [
@@ -126,7 +126,7 @@ describe("RubricService", () => {
     });
   });
 
-  describe("test_claim_1_rubric_immutable_after_publish", () => {
+  describe("test_claim_CS_1_rubric_immutable_after_publish", () => {
     it("publishes atomically with create when publish=true, setting canonical hash", async () => {
       const r = await svc.create(validRequest({ publish: true }));
       expect(r.publishedAtUtcMs).toBe(1_700_000_000_000n);
@@ -140,7 +140,7 @@ describe("RubricService", () => {
     });
   });
 
-  describe("test_claim_21_rubric_hash_is_deterministic", () => {
+  describe("test_claim_CS_21_rubric_hash_is_deterministic", () => {
     it("produces different hashes for rubrics with different rubric_versions (version is part of the hashed structure)", async () => {
       const r1 = await svc.create(validRequest({ rubric_version: "rubric_1.0", publish: true }));
       const r2 = await svc.create(validRequest({ rubric_version: "rubric_1.1", publish: true }));
@@ -161,7 +161,7 @@ describe("RubricService", () => {
     });
   });
 
-  describe("test_claim_14_get_by_version", () => {
+  describe("test_claim_CS_14_get_by_version", () => {
     it("returns a created rubric by version", async () => {
       await svc.create(validRequest({ rubric_version: "rubric_2.0" }));
       const r = await svc.getByVersion("rubric_2.0");

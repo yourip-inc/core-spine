@@ -2,10 +2,10 @@
  * Winner gate tests.
  *
  * Story: T1-S1-B-04.
- * Patent Claim 1: requires "stability ranking based at least in part on the
+ * Patent Claim CS-1: requires "stability ranking based at least in part on the
  * effective vote mass and a minimum confidence-lower-bound threshold."
- * Claim 17: confidence-lower-bound threshold.
- * Claim 20A: reason code emission on gate failure.
+ * Claim CS-17: confidence-lower-bound threshold.
+ * Claim CS-20A: reason code emission on gate failure.
  *
  * AC fixtures:
  *   - mean_bp 9000, stability 500  → FAIL with CONFIDENCE_LOWER_BOUND_FAIL
@@ -27,7 +27,7 @@ const thresholds = {
 
 describe("evaluateWinnerGate (scoring_v1)", () => {
   describe("AC fixtures", () => {
-    it("test_claim_1_winner_gate_requires_both_thresholds_high_score_low_stability_fails", () => {
+    it("test_claim_CS_1_winner_gate_requires_both_thresholds_high_score_low_stability_fails", () => {
       const r = evaluateWinnerGate({ meanBp: 9000, stabilityScore: 500 }, thresholds);
       expect(r.status).toBe("FAIL");
       expect(r.reasonCodes).toContain(REASON_CODES.CONFIDENCE_LOWER_BOUND_FAIL);
@@ -35,7 +35,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       expect(r.reasonCodes).not.toContain(REASON_CODES.SCORE_BELOW_THRESHOLD);
     });
 
-    it("test_claim_1_winner_gate_requires_both_thresholds_high_stability_low_score_fails", () => {
+    it("test_claim_CS_1_winner_gate_requires_both_thresholds_high_stability_low_score_fails", () => {
       const r = evaluateWinnerGate({ meanBp: 4000, stabilityScore: 9000 }, thresholds);
       expect(r.status).toBe("FAIL");
       expect(r.reasonCodes).toContain(REASON_CODES.SCORE_BELOW_THRESHOLD);
@@ -43,13 +43,13 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       expect(r.reasonCodes).not.toContain(REASON_CODES.STABILITY_SCORE_BELOW_THRESHOLD);
     });
 
-    it("test_claim_1_winner_gate_requires_both_thresholds_both_passing_returns_pass", () => {
+    it("test_claim_CS_1_winner_gate_requires_both_thresholds_both_passing_returns_pass", () => {
       const r = evaluateWinnerGate({ meanBp: 7500, stabilityScore: 6000 }, thresholds);
       expect(r.status).toBe("PASS");
       expect(r.reasonCodes).toEqual([]);
     });
 
-    it("test_claim_1_winner_gate_both_failing_emits_all_three_reason_codes", () => {
+    it("test_claim_CS_1_winner_gate_both_failing_emits_all_three_reason_codes", () => {
       const r = evaluateWinnerGate({ meanBp: 1000, stabilityScore: 500 }, thresholds);
       expect(r.status).toBe("FAIL");
       expect(r.reasonCodes).toEqual([
@@ -59,7 +59,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       ]);
     });
 
-    it("test_claim_20A_winner_gate_replay_produces_identical_reason_codes", () => {
+    it("test_claim_CS_20A_winner_gate_replay_produces_identical_reason_codes", () => {
       const input = { meanBp: 9000, stabilityScore: 500 };
       const a = evaluateWinnerGate(input, thresholds);
       const b = evaluateWinnerGate(input, thresholds);
@@ -71,7 +71,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
   });
 
   describe("boundary conditions", () => {
-    it("test_claim_17_winner_gate_exact_threshold_passes", () => {
+    it("test_claim_CS_17_winner_gate_exact_threshold_passes", () => {
       // Threshold is inclusive (>=) per B-04 spec.
       const r = evaluateWinnerGate(
         { meanBp: thresholds.scoreThresholdBp, stabilityScore: thresholds.stabilityThresholdBp },
@@ -80,7 +80,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       expect(r.status).toBe("PASS");
     });
 
-    it("test_claim_17_winner_gate_one_bp_below_score_threshold_fails", () => {
+    it("test_claim_CS_17_winner_gate_one_bp_below_score_threshold_fails", () => {
       const r = evaluateWinnerGate(
         { meanBp: thresholds.scoreThresholdBp - 1, stabilityScore: 9000 },
         thresholds,
@@ -89,7 +89,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       expect(r.reasonCodes).toEqual([REASON_CODES.SCORE_BELOW_THRESHOLD]);
     });
 
-    it("test_claim_17_winner_gate_one_bp_below_stability_threshold_fails", () => {
+    it("test_claim_CS_17_winner_gate_one_bp_below_stability_threshold_fails", () => {
       const r = evaluateWinnerGate(
         { meanBp: 9000, stabilityScore: thresholds.stabilityThresholdBp - 1 },
         thresholds,
@@ -100,13 +100,13 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
   });
 
   describe("input validation", () => {
-    it("test_claim_14_winner_gate_rejects_non_integer_mean_bp", () => {
+    it("test_claim_CS_14_winner_gate_rejects_non_integer_mean_bp", () => {
       expect(() =>
         evaluateWinnerGate({ meanBp: 5000.5, stabilityScore: 5000 }, thresholds),
       ).toThrow(/integer/);
     });
 
-    it("test_claim_14_winner_gate_rejects_mean_bp_out_of_range", () => {
+    it("test_claim_CS_14_winner_gate_rejects_mean_bp_out_of_range", () => {
       expect(() =>
         evaluateWinnerGate({ meanBp: -1, stabilityScore: 5000 }, thresholds),
       ).toThrow(/out of range/);
@@ -115,7 +115,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
       ).toThrow(/out of range/);
     });
 
-    it("test_claim_14_winner_gate_rejects_stability_score_out_of_range", () => {
+    it("test_claim_CS_14_winner_gate_rejects_stability_score_out_of_range", () => {
       expect(() =>
         evaluateWinnerGate({ meanBp: 5000, stabilityScore: -1 }, thresholds),
       ).toThrow(/out of range/);
@@ -126,7 +126,7 @@ describe("evaluateWinnerGate (scoring_v1)", () => {
   });
 
   describe("version binding", () => {
-    it("test_claim_1_winner_gate_echoes_scoring_version_in_result_for_audit", () => {
+    it("test_claim_CS_1_winner_gate_echoes_scoring_version_in_result_for_audit", () => {
       // The gate result includes scoring_version so it can be persisted onto
       // the aggregate row for audit-bundle replay (Claim 21, Claim 23).
       const r = evaluateWinnerGate({ meanBp: 7000, stabilityScore: 5000 }, thresholds);

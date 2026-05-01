@@ -2,7 +2,7 @@
  * Challenge Service unit tests.
  *
  * Story T1-S1-A-04: Challenge Service rejects lock when rubric_version unresolvable.
- * Claim coverage: test_claim_1_*, test_claim_14_*
+ * Claim coverage: test_claim_CS_1_*, test_claim_CS_14_*
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -59,7 +59,7 @@ describe("ChallengeService.resolveLockableRubric", () => {
     challengeSvc = new ChallengeService(rubricSvc);
   });
 
-  describe("test_claim_1_lock_rejects_unknown_rubric_version", () => {
+  describe("test_claim_CS_1_lock_rejects_unknown_rubric_version", () => {
     it("rejects lock when rubric_version does not exist", async () => {
       await expect(
         challengeSvc.resolveLockableRubric("rubric_9.9", 1_700_000_100_000n),
@@ -67,7 +67,7 @@ describe("ChallengeService.resolveLockableRubric", () => {
     });
   });
 
-  describe("test_claim_1_lock_rejects_draft_rubric", () => {
+  describe("test_claim_CS_1_lock_rejects_draft_rubric", () => {
     it("rejects lock when rubric exists but is still draft (not published)", async () => {
       await rubricSvc.create({
         rubric_version: "rubric_draft.1",
@@ -83,7 +83,7 @@ describe("ChallengeService.resolveLockableRubric", () => {
     });
   });
 
-  describe("test_claim_1_lock_succeeds_on_published_rubric", () => {
+  describe("test_claim_CS_1_lock_succeeds_on_published_rubric", () => {
     it("returns the locked rubric hash on a published rubric", async () => {
       await rubricSvc.create({
         rubric_version: "rubric_1.0",

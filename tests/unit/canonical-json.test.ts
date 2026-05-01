@@ -1,10 +1,10 @@
 /**
  * Canonical JSON serializer tests.
  *
- * Claim coverage: test_claim_1_*, test_claim_14_*, test_claim_21_*
+ * Claim coverage: test_claim_CS_1_*, test_claim_CS_14_*, test_claim_CS_21_*
  * These tests guard Flag 3 of the API Contract: if this module's byte output
  * ever drifts, every downstream track's event_hash silently desyncs from T1
- * and audit replay (Claim 22) breaks. These fixtures are frozen and MUST NOT
+ * and audit replay (Claim CS-22) breaks. These fixtures are frozen and MUST NOT
  * be updated without a coordinated version bump of the canonical-JSON spec
  * across T1-T9.
  */
@@ -13,7 +13,7 @@ import { describe, it, expect } from "vitest";
 import { canonicalString, canonicalBytes, CanonicalJsonError } from "../../src/canonical/canonical-json.js";
 
 describe("canonical-json", () => {
-  describe("test_claim_1_deterministic_serialization", () => {
+  describe("test_claim_CS_1_deterministic_serialization", () => {
     it("sorts object keys lexicographically", () => {
       expect(canonicalString({ b: 1, a: 2 })).toBe('{"a":2,"b":1}');
       expect(canonicalString({ z: 1, a: 2, m: 3 })).toBe('{"a":2,"m":3,"z":1}');
@@ -51,7 +51,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_1_null_omission", () => {
+  describe("test_claim_CS_1_null_omission", () => {
     it("omits fields whose value is null", () => {
       expect(canonicalString({ a: 1, b: null })).toBe('{"a":1}');
     });
@@ -73,7 +73,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_14_integer_only_numbers", () => {
+  describe("test_claim_CS_14_integer_only_numbers", () => {
     it("accepts safe integer numbers", () => {
       expect(canonicalString({ ms: 1_700_000_000_000 })).toBe('{"ms":1700000000000}');
       expect(canonicalString({ bp: 10000 })).toBe('{"bp":10000}');
@@ -102,7 +102,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_14_string_escaping", () => {
+  describe("test_claim_CS_14_string_escaping", () => {
     it("escapes quote and backslash", () => {
       expect(canonicalString({ s: 'a"b' })).toBe('{"s":"a\\"b"}');
       expect(canonicalString({ s: "a\\b" })).toBe('{"s":"a\\\\b"}');
@@ -121,7 +121,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_21_byte_level_determinism", () => {
+  describe("test_claim_CS_21_byte_level_determinism", () => {
     it("two canonicalizations of the same object produce byte-identical output", () => {
       const obj = { rubric_version: "rubric_1.0", criteria: [{ criterion_key: "a", weight_bp: 10000 }] };
       const a = canonicalBytes(obj);
@@ -136,7 +136,7 @@ describe("canonical-json", () => {
     });
   });
 
-  describe("test_claim_21_rejects_unserializable_types", () => {
+  describe("test_claim_CS_21_rejects_unserializable_types", () => {
     it("rejects Date (use createdAtUtcMs BigInt instead)", () => {
       expect(() => canonicalString({ d: new Date() as never })).toThrow(CanonicalJsonError);
     });

@@ -29,11 +29,11 @@ describe("claim registry parser", () => {
     const reg = parseClaimRegistry(src);
     const ids = reg.claims.map((c) => c.id);
     for (let n = 1; n <= 23; n++) {
-      expect(ids).toContain(String(n));
+      expect(ids).toContain(`CS-${n}`);
     }
-    expect(ids).toContain("13A");
-    expect(ids).toContain("13B");
-    expect(ids).toContain("20A");
+    expect(ids).toContain("CS-13A");
+    expect(ids).toContain("CS-13B");
+    expect(ids).toContain("CS-20A");
   });
 
   it("has zero legacy entries (T1-S1-F-04 / T1-S1-F-05 reclassification complete)", async () => {
@@ -55,17 +55,17 @@ describe("claim registry parser", () => {
   });
 
   it("rejects an invalid status value", () => {
-    const bad = `claims:\n  - id: "1"\n    title: "X"\n    status: banana\n    test_files: []\n`;
+    const bad = `claims:\n  - id: "CS-1"\n    title: "X"\n    status: banana\n    test_files: []\n`;
     expect(() => parseClaimRegistry(bad)).toThrow(/invalid status/);
   });
 
   it("rejects duplicate claim ids", () => {
     const bad = `claims:
-  - id: "1"
+  - id: "CS-1"
     title: "X"
     status: placeholder
     test_files: []
-  - id: "1"
+  - id: "CS-1"
     title: "Y"
     status: placeholder
     test_files: []
@@ -76,15 +76,15 @@ describe("claim registry parser", () => {
 
 describe("claim sort key", () => {
   it("orders numeric claims naturally", () => {
-    const ids = ["13", "2", "1", "21", "3"];
+    const ids = ["CS-13", "CS-2", "CS-1", "CS-21", "CS-3"];
     ids.sort((a, b) => claimSortKey(a) - claimSortKey(b));
-    expect(ids).toEqual(["1", "2", "3", "13", "21"]);
+    expect(ids).toEqual(["CS-1", "CS-2", "CS-3", "CS-13", "CS-21"]);
   });
 
   it("places sub-lettered claims immediately after their parent numeric claim", () => {
-    const ids = ["14", "13B", "13", "13A", "20A", "20", "21"];
+    const ids = ["CS-14", "CS-13B", "CS-13", "CS-13A", "CS-20A", "CS-20", "CS-21"];
     ids.sort((a, b) => claimSortKey(a) - claimSortKey(b));
-    expect(ids).toEqual(["13", "13A", "13B", "14", "20", "20A", "21"]);
+    expect(ids).toEqual(["CS-13", "CS-13A", "CS-13B", "CS-14", "CS-20", "CS-20A", "CS-21"]);
   });
 });
 
@@ -96,7 +96,7 @@ describe("report renderers", () => {
       rows: [
         {
           claim: {
-            id: "1",
+            id: "CS-1",
             title: "Core Spine integrated service surface",
             status: "implemented" as const,
             testFiles: ["tests/unit/canonical-json.test.ts"],
@@ -114,7 +114,7 @@ describe("report renderers", () => {
     expect(a).toBe(b);
     expect(a).toContain("# Claim Coverage Report");
     expect(a).toContain("🟢 implemented (3 tests)");
-    expect(a).toContain("| 1 | Core Spine integrated service surface |");
+    expect(a).toContain("| CS-1 | Core Spine integrated service surface |");
   });
 
   it("renderHtml escapes HTML special characters in claim titles", () => {
@@ -124,7 +124,7 @@ describe("report renderers", () => {
       rows: [
         {
           claim: {
-            id: "99",
+            id: "CS-99",
             title: "<script>alert('xss')</script>",
             status: "placeholder" as const,
             testFiles: [],

@@ -2,7 +2,7 @@
  * Engagement signal ingestion tests.
  *
  * Story: T1-S1-C-03.
- * Claims: 2 (engagement signals), 19 (per-challenge scoping).
+ * Claims: CS-2 (engagement signals), CS-19 (per-challenge scoping).
  *
  * AC fixtures:
  *   - Run ingestion for active challenge and verify all three signals populated
@@ -82,7 +82,7 @@ function makeIngestor(telemetryData: Map<string, RaterSignalRecord[]>) {
 }
 
 describe("EngagementSignalIngestor", () => {
-  describe("test_claim_2_ingestion_populates_all_three_signals", () => {
+  describe("test_claim_CS_2_ingestion_populates_all_three_signals", () => {
     it("persists watch, frequency, and recency for each rater", async () => {
       const { ingestor, repo } = makeIngestor(
         new Map([
@@ -105,7 +105,7 @@ describe("EngagementSignalIngestor", () => {
     });
   });
 
-  describe("test_claim_19_ingestion_rejects_cross_challenge_telemetry", () => {
+  describe("test_claim_CS_19_ingestion_rejects_cross_challenge_telemetry", () => {
     it("refuses to persist a signal record whose challenge_id does not match the requested challenge", async () => {
       // Telemetry returns a record for challenge-B even though we asked for challenge-A.
       // This should throw — per Claim 19, weights must not cross challenge boundaries.
@@ -125,7 +125,7 @@ describe("EngagementSignalIngestor", () => {
     });
   });
 
-  describe("test_claim_2_ingestion_is_idempotent", () => {
+  describe("test_claim_CS_2_ingestion_is_idempotent", () => {
     it("re-running ingestion overwrites existing rows rather than creating duplicates", async () => {
       const { ingestor, repo } = makeIngestor(
         new Map([
@@ -145,7 +145,7 @@ describe("EngagementSignalIngestor", () => {
     });
   });
 
-  describe("test_claim_2_ingestion_missing_signals_default_to_zero", () => {
+  describe("test_claim_CS_2_ingestion_missing_signals_default_to_zero", () => {
     it("a record with zero signals does not block computation; persists base weight 1.0", async () => {
       const { ingestor, repo } = makeIngestor(
         new Map([
@@ -163,7 +163,7 @@ describe("EngagementSignalIngestor", () => {
     });
   });
 
-  describe("test_claim_19_ingestion_scopes_to_requested_challenge", () => {
+  describe("test_claim_CS_19_ingestion_scopes_to_requested_challenge", () => {
     it("ingesting challenge-A does not touch rows from challenge-B", async () => {
       // Two challenges with overlapping rater_id "r1" — per Claim 19, these
       // are independent rows keyed by (challenge_id, rater_id).
@@ -197,7 +197,7 @@ describe("EngagementSignalIngestor", () => {
     });
   });
 
-  describe("test_claim_2_ingestion_empty_telemetry_returns_zero_stats", () => {
+  describe("test_claim_CS_2_ingestion_empty_telemetry_returns_zero_stats", () => {
     it("a challenge with no telemetry records produces zero upserts but does not throw", async () => {
       const { ingestor, repo } = makeIngestor(new Map([["challenge-A", []]]));
       const stats = await ingestor.ingestForChallenge("challenge-A", CURRENT_SCORING_VERSION);
