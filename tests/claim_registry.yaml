@@ -110,6 +110,7 @@ claims:
     status: implemented
     test_files:
       - tests/unit/canonical-json.test.ts
+    notes: "Coverage is via the test_claim_CS_13A_canonical_byte_representation umbrella block in tests/unit/canonical-json.test.ts. The block intentionally exercises all five sub-properties (sorted keys, null exclusion, integer-safe encoding, UTF-8, runtime-order independence) in one shared-fixture composition test, mirroring the patent's claim language as one composed property. Granular per-property assertions live under CS-1, CS-14, CS-21. Do not decompose this block."
 
   - id: "CS-13B"
     title: "Audit bundle reproduces payout outputs from stored event hashes + version IDs without access to original runtime state"

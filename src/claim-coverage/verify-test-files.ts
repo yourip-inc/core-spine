@@ -110,14 +110,15 @@ export async function verifyTestFiles(
  * regex injection.
  */
 function buildClaimNameRegex(claimId: string): RegExp {
-  if (!/^\d+[A-Z]?$/.test(claimId)) {
+  if (!/^CS-\d+[A-Z]?$/.test(claimId)) {
     throw new Error(
       `verifyTestFiles: invalid claim ID ${JSON.stringify(claimId)}; ` +
-      `expected digits optionally followed by a single uppercase letter.`,
+      `expected CS- prefix followed by digits optionally followed by a single uppercase letter.`,
     );
   }
   // Bounded by word boundary on the left (so `foo_test_claim_1_` does not
   // match a lookup for "1"), and an explicit underscore+letter on the right
   // (mirroring the CLAIM_NAME_RE in discover.ts).
-  return new RegExp(`\\btest_claim_${claimId}_[a-z][a-z0-9_]*\\b`);
+  const testNameId = claimId.replace("-", "_");
+  return new RegExp(`\\btest_claim_${testNameId}_[a-z][a-z0-9_]*\\b`);
 }

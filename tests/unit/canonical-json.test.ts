@@ -181,4 +181,85 @@ describe("canonical-json", () => {
       expect(() => canonicalString(undefined as never)).toThrow(CanonicalJsonError);
     });
   });
+
+  describe("test_claim_CS_13A_canonical_byte_representation", () => {
+    /**
+     * Patent claim CS-13A umbrella test.
+     *
+     * 13A describes one composed property — the canonical byte
+     * representation — with five sub-properties: sorted keys,
+     * null-value exclusion, integer-safe encoding, UTF-8 encoding,
+     * and byte-identical output regardless of runtime serialization
+     * order. The granular per-property tests live under CS-1, CS-14,
+     * and CS-21 (deterministic serialization, integer-only numbers,
+     * null omission, byte-level determinism). This umbrella block
+     * exists so the claim-coverage harness can attribute discoverable
+     * coverage to CS-13A directly.
+     *
+     * One shared fixture exercises all five properties end-to-end.
+     * Do not decompose into per-property blocks; that would duplicate
+     * coverage already attributed to CS-1, CS-14, CS-21.
+     */
+
+    // Shared fixture exercising all five 13A sub-properties:
+    //   - sorted keys (z, m, a in input → a, m, z in output)
+    //   - null exclusion (deleted_at: null disappears in output)
+    //   - integer-safe BigInt (created_at_utc_ms as bigint emits unquoted)
+    //   - UTF-8 non-ASCII pass-through (label uses non-ASCII characters)
+    //   - byte-identical across input orders (shuffled clone matches)
+    const fixture = {
+      z_field: 100,
+      m_field: "中文テスト",
+      a_field: 200,
+      deleted_at: null,
+      created_at_utc_ms: 1_700_000_000_000n,
+    };
+
+    it("emits keys in sorted order regardless of input key order", () => {
+      const bytes = canonicalBytes(fixture);
+      const text = new TextDecoder().decode(bytes);
+      // Keys should appear in lex order: a_field < created_at_utc_ms <
+      // deleted_at < m_field < z_field. (deleted_at omitted because null.)
+      const aPos = text.indexOf("a_field");
+      const createdPos = text.indexOf("created_at_utc_ms");
+      const mPos = text.indexOf("m_field");
+      const zPos = text.indexOf("z_field");
+      expect(aPos).toBeLessThan(createdPos);
+      expect(createdPos).toBeLessThan(mPos);
+      expect(mPos).toBeLessThan(zPos);
+    });
+
+    it("excludes null-valued fields from the output", () => {
+      const text = canonicalString(fixture);
+      expect(text).not.toContain("deleted_at");
+      expect(text).not.toContain("null");
+    });
+
+    it("encodes BigInt time values as unquoted JSON numbers", () => {
+      const text = canonicalString(fixture);
+      // BigInt emits as a JSON number, not a quoted string.
+      expect(text).toContain('"created_at_utc_ms":1700000000000');
+      expect(text).not.toContain('"created_at_utc_ms":"1700000000000"');
+    });
+
+    it("preserves non-ASCII characters as UTF-8 bytes (no escaping)", () => {
+      const bytes = canonicalBytes(fixture);
+      const text = new TextDecoder().decode(bytes);
+      // Non-ASCII passes through verbatim per the writeString rules.
+      expect(text).toContain("中文テスト");
+    });
+
+    it("produces byte-identical output for semantically-equal inputs in different key orders", () => {
+      const shuffled = {
+        m_field: "中文テスト",
+        a_field: 200,
+        created_at_utc_ms: 1_700_000_000_000n,
+        z_field: 100,
+        deleted_at: null,
+      };
+      const bytesA = canonicalBytes(fixture);
+      const bytesB = canonicalBytes(shuffled);
+      expect(bytesA).toEqual(bytesB);
+    });
+  });
 });

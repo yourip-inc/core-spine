@@ -171,7 +171,7 @@ describe("MigrationRecordService.verify", () => {
 });
 
 describe("MigrationRecordService.listByChallenge", () => {
-  it("test_claim_CS_23_listByChallenge_returns_migrations_in_effective_order_for_replay", async () => {
+  it("test_claim_CS_23_list_by_challenge_returns_migrations_in_effective_order_for_replay", async () => {
     const repo = new InMemoryRepo();
     const svc = new MigrationRecordService(
       fakePool,
@@ -192,7 +192,7 @@ describe("MigrationRecordService.listByChallenge", () => {
     ]);
   });
 
-  it("test_claim_CS_23_listByChallenge_asOfUtcMs_filters_out_future_migrations_for_replay_branching", async () => {
+  it("test_claim_CS_23_list_by_challenge_as_of_utc_ms_filters_out_future_migrations_for_replay_branching", async () => {
     // This is the Claim 23 branching semantic: when replaying an event at
     // time T, we only apply migrations whose effective_at_utc_ms <= T.
     const repo = new InMemoryRepo();
