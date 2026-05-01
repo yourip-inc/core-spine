@@ -92,7 +92,7 @@ export async function discoverTests(
  * Sort key that orders "1" < "13" < "13A" < "13B" < "14" < "20" < "20A" < "21".
  */
 export function claimSortKey(id: string): number {
-  const m = id.match(/^(\d+)([A-Z]?)$/);
+  const m = id.match(/^CS-(\d+)([A-Z]?)$/);
   if (!m) return Number.MAX_SAFE_INTEGER;
   const n = Number(m[1]);
   const letter = m[2] ? m[2].charCodeAt(0) - 0x40 : 0; // A=1, B=2, 0 if none
