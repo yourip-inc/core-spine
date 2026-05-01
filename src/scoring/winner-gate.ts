@@ -2,8 +2,8 @@
  * Winner gate.
  *
  * Story: T1-S1-B-04.
- * Patent Claim 1: "a stability ranking based at least in part on the effective
- * vote mass and a minimum confidence-lower-bound threshold." Claim 17 makes
+ * Patent Claim CS-1: "a stability ranking based at least in part on the effective
+ * vote mass and a minimum confidence-lower-bound threshold." Claim CS-17 makes
  * the confidence-lower-bound threshold explicit.
  *
  * Rule (scoring_v1):

@@ -1,7 +1,7 @@
 /**
  * Decimal4 — deterministic 4-decimal-place arithmetic backed by BigInt.
  *
- * PATENT-CRITICAL. Used by Claim 3 (effective vote mass formula, T1-S1-B-02).
+ * PATENT-CRITICAL. Used by Claim CS-3 (effective vote mass formula, T1-S1-B-02).
  * Engineering PRD §8.1 mandates "Integer-safe representation of time (milliseconds),
  * currency (cents), and basis-point values. No floating-point values in signed or
  * replay-critical payloads."

@@ -121,7 +121,7 @@ describe("EngagementSignalIngestor", () => {
         ]),
       );
       await expect(ingestor.ingestForChallenge("challenge-A", CURRENT_SCORING_VERSION))
-        .rejects.toThrow(/Claim 19/);
+        .rejects.toThrow(/Claim CS-19/);
     });
   });
 

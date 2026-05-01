@@ -2,7 +2,7 @@
  * Stability score derivation.
  *
  * Story: T1-S1-B-03.
- * Patent Claim 14: "stability ranking based at least in part on the effective
+ * Patent Claim CS-14: "stability ranking based at least in part on the effective
  * vote mass and a minimum confidence-lower-bound threshold."
  *
  * The exact function is a documented engineering decision in

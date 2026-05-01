@@ -2,7 +2,7 @@
  * Bounded engagement weight computation.
  *
  * Story: T1-S1-C-02.
- * Patent Claim 2: "a score aggregate … wherein the weight of each rater is a
+ * Patent Claim CS-2: "a score aggregate … wherein the weight of each rater is a
  * bounded function of engagement signals associated with that rater's recent
  * participation in the challenge."
  *

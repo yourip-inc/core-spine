@@ -1,7 +1,7 @@
 /**
  * Event hash and signing primitives for Core Spine.
  *
- * PATENT-CRITICAL. Referenced by Claims 1, 13A, 14, 21, 22.
+ * PATENT-CRITICAL. Referenced by Claims CS-1, CS-13A, CS-14, CS-21, CS-22.
  * API Contract §8.1 / Flag 1 (rating event validation order: hash recomputation BEFORE signature verification).
  *
  * The event_hash is sha-256 of the canonical JSON bytes of the event payload

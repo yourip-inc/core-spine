@@ -2,7 +2,7 @@
  * Submission HTTP routes.
  *
  * Story: T1-S1-E-03 (deprecated-alias normalization on POST /submissions).
- * Claim: 10 (vocabulary alignment).
+ * Claim: CS-10 (vocabulary alignment).
  *
  * This file implements the input-normalization and deprecation-header flow for
  * the `submitter_role` field ONLY. The full Submission Registry (cryptographic
